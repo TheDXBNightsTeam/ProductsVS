@@ -5,8 +5,8 @@ import { useEffect, useCallback, type RefObject } from "react"
 /**
  * Hook for managing keyboard navigation and focus trapping
  */
-export function useKeyboardNavigation(
-  containerRef: RefObject<HTMLElement>,
+export function useKeyboardNavigation<T extends HTMLElement = HTMLElement>(
+  containerRef: RefObject<T>,
   options: {
     onEscape?: () => void
     onEnter?: () => void
