@@ -1,3 +1,8 @@
 {
-  "/page": "app/page.js"
+  "/ai-battle/page": "app/ai-battle/page.js",
+  "/category/[category]/page": "app/category/[category]/page.js",
+  "/about/page": "app/about/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/ar/page": "app/ar/page.js",
+  "/admin/login/page": "app/admin/login/page.js"
 }
