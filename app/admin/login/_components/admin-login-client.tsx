@@ -75,6 +75,7 @@ export default function AdminLoginClient() {
               value={formData.email}
               onChange={handleChange}
               required
+              autoComplete="email"
               placeholder="admin@productsvs.com"
               className="w-full px-4 py-3 text-base border-2 border-gray-300 focus:border-black focus:outline-none transition-colors"
               disabled={loading}
@@ -92,6 +93,7 @@ export default function AdminLoginClient() {
               value={formData.password}
               onChange={handleChange}
               required
+              autoComplete="current-password"
               placeholder="Enter your password"
               className="w-full px-4 py-3 text-base border-2 border-gray-300 focus:border-black focus:outline-none transition-colors"
               disabled={loading}
