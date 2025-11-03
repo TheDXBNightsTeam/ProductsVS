@@ -4,6 +4,11 @@
 ProductsVS is an AI-powered bilingual (English & Arabic) comparison platform built with Next.js 14. The application allows users to compare products and services with comprehensive, unbiased analysis across technology, lifestyle, services, and more.
 
 ## Recent Changes
+- **2024-11-03**: Fixed critical hydration error
+  - Resolved React hydration mismatch by moving theme script from `<head>` to `<body>` tag
+  - Fixed TypeScript errors in keyboard navigation hook
+  - Added favicon files and autocomplete attributes for better accessibility
+  - Removed unused `src/app/` directory for cleaner project structure
 - **2024-11-02**: Migrated from Vercel to Replit
   - Configured Next.js dev/start scripts to bind to port 5000 on 0.0.0.0 for Replit compatibility
   - Set up autoscale deployment configuration
@@ -21,9 +26,9 @@ ProductsVS is an AI-powered bilingual (English & Arabic) comparison platform bui
 - **Analytics**: Vercel Analytics
 
 ### Key Directories
-- `/src/app/` - Next.js app router pages and API routes
-- `/src/components/` - React components including admin panel
-- `/src/lib/` - Utility libraries (database, auth, AI)
+- `/app/` - Next.js app router pages and API routes
+- `/components/` - React components including admin panel (moved from src/)
+- `/lib/` - Utility libraries (database, auth, AI) (moved from src/)
 - `/supabase/migrations/` - Database migration files
 - `/public/` - Static assets
 
@@ -43,8 +48,7 @@ Optional:
 None documented yet.
 
 ## Known Issues
-1. **Theme Script Hydration Warning**: React hydration mismatch occurs with the theme initialization script in the layout. This is cosmetic and doesn't affect functionality. The app recovers gracefully. Scheduled for post-launch fix.
-2. **CSP Warning**: Content Security Policy blocks AdSense script in development (uses placeholder publisher ID). Update CSP headers when adding real AdSense credentials.
+1. **CSP Warning**: Content Security Policy blocks AdSense script in development (uses placeholder publisher ID). This is expected behavior. Update CSP headers when adding real AdSense credentials for production.
 
 ## Development Workflow
 - **Dev Server**: `npm run dev` (runs on port 5000, bound to 0.0.0.0)

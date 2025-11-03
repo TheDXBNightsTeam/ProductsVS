@@ -7,7 +7,6 @@ import { ErrorBoundary } from "@/components/ErrorBoundary"
 import SkipToContent from "@/components/SkipToContent"
 import StructuredData from "@/components/seo/StructuredData"
 import { ThemeProvider } from "@/components/ThemeProvider"
-import { ThemeScript } from "@/components/ThemeScript"
 import { generateOrganizationSchema, generateWebsiteSchema } from "@/lib/seo/structured-data"
 import "./globals.css"
 
