@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { type NextRequest, NextResponse } from "next/server"
 import { generateComparison } from "@/lib/groq"
 import { saveComparison } from "@/lib/db/comparisons"

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { NextResponse } from "next/server"
 
 // Cache analytics for 2 minutes (120 seconds)

@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic"
+
 import { NextResponse } from "next/server"
 
 // Cache products for 5 minutes (300 seconds) - static data
