@@ -2231,41 +2231,6 @@ export const comparisonsData: Record<string, Comparison> = {
     ],
     verdict: "Choose urban for career and amenities. Choose rural for affordability, nature, and peace.",
   },
-  "airbnb-vs-hotel": {
-    slug: "airbnb-vs-hotel",
-    title: "Airbnb vs Hotel",
-    description: "Accommodation options compared for travelers.",
-    category: "Travel & Accommodation",
-    views: "12.6K",
-    lastUpdated: "January 2025",
-    optionA: {
-      name: "Airbnb",
-      pros: ["More space", "Kitchen facilities", "Local experience", "Better for groups", "Unique properties"],
-    },
-    optionB: {
-      name: "Hotel",
-      pros: ["Consistent quality", "Daily cleaning", "Amenities", "Professional service", "Loyalty programs"],
-    },
-    sections: [
-      {
-        title: "Cost",
-        content:
-          "Airbnb is cheaper for groups and long stays. Hotels are better for short solo trips. Airbnb cleaning fees add up for short stays.",
-      },
-      {
-        title: "Experience",
-        content:
-          "Airbnb offers local neighborhood immersion. Hotels provide consistent, professional experience. Airbnb is more authentic.",
-      },
-      {
-        title: "Convenience",
-        content:
-          "Hotels offer daily cleaning and front desk service. Airbnb requires self-service. Hotels are more convenient.",
-      },
-    ],
-    verdict:
-      "Choose Airbnb for groups, long stays, and local experience. Choose hotels for convenience and consistency.",
-  },
   "matcha-vs-coffee": {
     slug: "matcha-vs-coffee",
     title: "Matcha vs Coffee",

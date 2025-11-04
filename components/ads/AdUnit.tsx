@@ -5,6 +5,12 @@ import type React from "react"
 import { useEffect, useRef, useState } from "react"
 import { adsenseConfig } from "@/lib/config/adsense"
 
+declare global {
+  interface Window {
+    adsbygoogle: any[]
+  }
+}
+
 interface AdUnitProps {
   slot: string
   format?: "auto" | "rectangle" | "horizontal" | "vertical"

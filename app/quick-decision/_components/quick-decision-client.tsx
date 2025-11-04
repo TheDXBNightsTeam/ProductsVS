@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import PageLayout from "@/components/page-layout"
+import Breadcrumbs from "@/components/breadcrumbs"
 
 interface Question {
   id: number
@@ -138,15 +139,20 @@ export default function QuickDecisionClient() {
   const progress = ((currentQuestion + 1) / questions.length) * 100
 
   return (
-    <PageLayout
-      title="Quick Decision Tool"
-      description="Answer 5 quick questions and get your perfect recommendation in 60 seconds!"
-      breadcrumbs={[
+    <PageLayout currentPath="/quick-decision">
+      <Breadcrumbs items={[
         { label: "Home", href: "/" },
         { label: "Quick Decision Tool", href: "/quick-decision" },
-      ]}
-    >
-      <div className="max-w-3xl mx-auto">
+      ]} />
+      
+      <section className="hero-section">
+        <div className="container">
+          <h1>Quick Decision Tool</h1>
+          <p className="hero-subtitle">Answer 5 quick questions and get your perfect recommendation in 60 seconds!</p>
+        </div>
+      </section>
+
+      <div className="max-w-3xl mx-auto" style={{ marginTop: "2rem" }}>
         {!showResult ? (
           <div className="bg-white rounded-xl shadow-lg p-8">
             <div className="mb-8">

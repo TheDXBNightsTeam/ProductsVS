@@ -11,11 +11,13 @@ export async function generateStaticParams() {
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   // Try static first
   let comparison = getComparisonBySlug(params.slug)
+  let isPendingComparison = false
 
   if (!comparison) {
     const dynamicComp = await getDynamicComparison(params.slug, ["approved", "pending"])
     if (dynamicComp) {
       comparison = dynamicComp
+      isPendingComparison = dynamicComp.status === "pending"
     }
   }
 
@@ -25,9 +27,6 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       description: "The comparison you're looking for doesn't exist yet. Try generating it with our AI Battle tool!",
     }
   }
-
-  // Check if comparison is pending
-  const isPendingComparison = source === "dynamic" && isPending
 
   return {
     title: `${comparison.title} | Products VS`,

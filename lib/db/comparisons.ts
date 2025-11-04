@@ -143,6 +143,7 @@ export async function getComparisonBySlug(slug: string, statuses: string[] = ["a
     category: comparison.category,
     views: comparison.views?.toString() || "0",
     lastUpdated: new Date(comparison.updated_at).toLocaleDateString(),
+    status: comparison.status,
     optionA: {
       name: comparison.product_a,
       pros: comparison.comparison_data.product_a_strengths,

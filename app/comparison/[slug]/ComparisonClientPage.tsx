@@ -26,6 +26,11 @@ interface Rating {
   count: number
 }
 
+interface Section {
+  title: string
+  content: string
+}
+
 export default function ComparisonClientPage({
   params,
   initialComparison,
@@ -376,7 +381,7 @@ export default function ComparisonClientPage({
 
               <div className="comparison-section" style={{ marginTop: "4rem" }}>
                 <h2>Detailed Analysis</h2>
-                {comparison.sections.slice(0, 2).map((section, index) => (
+                {comparison.sections.slice(0, 2).map((section: Section, index: number) => (
                   <div key={index} style={{ marginTop: "2rem" }}>
                     <h3 style={{ fontSize: "1.5rem", marginBottom: "1rem", fontWeight: 600 }}>{section.title}</h3>
                     <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{section.content}</p>
@@ -403,7 +408,7 @@ export default function ComparisonClientPage({
               </div> */}
 
               <div className="comparison-section">
-                {comparison.sections.slice(2).map((section, index) => (
+                {comparison.sections.slice(2).map((section: Section, index: number) => (
                   <div key={index} style={{ marginTop: "2rem" }}>
                     <h3 style={{ fontSize: "1.5rem", marginBottom: "1rem", fontWeight: 600 }}>{section.title}</h3>
                     <p style={{ lineHeight: 1.8, color: "var(--text-secondary)" }}>{section.content}</p>
