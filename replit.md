@@ -23,10 +23,18 @@ The application serves as a decision-making tool, helping users compare products
 - Updated `app/ai-battle/_components/ai-battle-client.tsx` to show submission confirmation
 
 ### ⚠️ Setup Required
-**IMPORTANT**: The `comparisons_dynamic` table must be created in Supabase Dashboard:
-1. See `SUPABASE_MIGRATION_INSTRUCTIONS.md` for step-by-step instructions
-2. Execute the SQL script in Supabase SQL Editor
-3. This enables the moderation system to function properly
+**IMPORTANT - Two manual steps needed:**
+
+1. **Create `comparisons_dynamic` table** in Supabase Dashboard:
+   - See `SUPABASE_MIGRATION_INSTRUCTIONS.md` for step-by-step instructions
+   - Execute the SQL script in Supabase SQL Editor
+   - This enables the moderation system to function properly
+
+2. **Create Admin Account** to access `/admin` dashboard:
+   - See `ADMIN_ACCOUNT_SETUP.md` for detailed instructions
+   - Generate a secure password hash using bcryptjs
+   - Insert admin credentials into `admin_users` table
+   - Login at `/admin/login` with your credentials
 
 ## User Preferences
 
