@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 export interface DynamicComparison {
   id: string
@@ -92,7 +93,7 @@ export async function saveComparison(
   comparisonData: DynamicComparison["comparison_data"],
   email?: string,
 ) {
-  const supabase = await createClient()
+  const supabase = createAdminClient()
   const { data, error } = await supabase
     .from("comparisons_dynamic")
     .insert({

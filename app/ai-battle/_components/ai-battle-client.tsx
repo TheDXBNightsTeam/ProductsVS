@@ -190,6 +190,28 @@ export default function AIBattleClient() {
 
           {result && !loading && (
             <div style={{ marginTop: "3rem" }}>
+              {result.message && (
+                <div
+                  style={{
+                    padding: "1.25rem",
+                    background: result.saved ? "var(--success-light, #e8f5e9)" : "var(--warning-light, #fff3cd)",
+                    border: `2px solid ${result.saved ? "var(--success, #4caf50)" : "var(--warning, #ff9800)"}`,
+                    marginBottom: "2rem",
+                    borderRadius: "4px",
+                  }}
+                >
+                  <p
+                    style={{
+                      margin: 0,
+                      fontSize: "1rem",
+                      color: result.saved ? "var(--success-dark, #2e7d32)" : "var(--warning-dark, #e65100)",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {result.saved ? "✅" : "⚠️"} {result.message}
+                  </p>
+                </div>
+              )}
               <div
                 style={{
                   padding: "2rem",

@@ -6,6 +6,28 @@ Products VS is a comprehensive product comparison platform that provides users w
 
 The application serves as a decision-making tool, helping users compare products, services, and concepts through structured analysis, ratings, voting systems, and AI-powered insights.
 
+## Recent Changes (November 4, 2025)
+
+### ✅ AI Comparison Moderation System Implemented
+- **AI Battle Feature**: Now saves all AI-generated comparisons to database with "pending" status
+- **Admin Moderation Workflow**: Admins can review, approve, or reject AI comparisons from dashboard
+- **Database Schema**: Created `comparisons_dynamic` table with moderation fields
+- **User Feedback**: Users see confirmation message that comparison is under review
+- **Approved Comparisons**: After admin approval, comparisons become permanent pages with SEO
+
+### 🔧 Technical Updates
+- Updated GROQ API key environment variable from `API-KEY_GROQ_API_KEY` to `GROQ_API_KEY`
+- Updated AI model from `llama-3.1-70b-versatile` to `llama-3.3-70b-versatile` (latest version)
+- Created `lib/supabase/admin.ts` for Service Role Key operations
+- Modified `app/api/battle/route.ts` to save comparisons with pending status
+- Updated `app/ai-battle/_components/ai-battle-client.tsx` to show submission confirmation
+
+### ⚠️ Setup Required
+**IMPORTANT**: The `comparisons_dynamic` table must be created in Supabase Dashboard:
+1. See `SUPABASE_MIGRATION_INSTRUCTIONS.md` for step-by-step instructions
+2. Execute the SQL script in Supabase SQL Editor
+3. This enables the moderation system to function properly
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
