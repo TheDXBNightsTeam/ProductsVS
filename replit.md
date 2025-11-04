@@ -1,70 +1,221 @@
-# ProductsVS - Replit Project Documentation
+# Products VS - AI-Powered Bilingual Comparison Platform
 
 ## Overview
-ProductsVS is an AI-powered bilingual (English & Arabic) comparison platform built with Next.js 14. The application allows users to compare products and services with comprehensive, unbiased analysis across technology, lifestyle, services, and more.
 
-## Recent Changes
-- **2024-11-03**: Fixed critical hydration error
-  - Resolved React hydration mismatch by moving theme script from `<head>` to `<body>` tag
-  - Fixed TypeScript errors in keyboard navigation hook
-  - Added favicon files and autocomplete attributes for better accessibility
-  - Removed unused `src/app/` directory for cleaner project structure
-- **2024-11-02**: Migrated from Vercel to Replit
-  - Configured Next.js dev/start scripts to bind to port 5000 on 0.0.0.0 for Replit compatibility
-  - Set up autoscale deployment configuration
-  - Added JWT_SECRET validation to prevent insecure fallback values
-  - All required environment variables configured in Replit Secrets
+Products VS is a comprehensive product comparison platform that provides users with detailed, unbiased comparisons across multiple categories. The platform features both static, expertly-written comparisons and AI-generated comparisons powered by Groq's Llama model. Built with Next.js 14 and designed for both English and Arabic audiences, it includes an admin dashboard for content moderation, SEO optimization, and comprehensive accessibility features.
 
-## Project Architecture
-
-### Tech Stack
-- **Framework**: Next.js 14.2.33 (App Router)
-- **Database**: Supabase (PostgreSQL)
-- **AI Integration**: Groq SDK for AI-powered comparisons
-- **Authentication**: JWT-based admin authentication with bcryptjs
-- **Styling**: Tailwind CSS 4.1.9 with custom animations
-- **Analytics**: Vercel Analytics
-
-### Key Directories
-- `/app/` - Next.js app router pages and API routes
-- `/components/` - React components including admin panel (moved from src/)
-- `/lib/` - Utility libraries (database, auth, AI) (moved from src/)
-- `/supabase/migrations/` - Database migration files
-- `/public/` - Static assets
-
-### Environment Variables
-All secrets are managed via Replit Secrets (required):
-- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase public anonymous key
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase admin key (server-side only)
-- `GROQ_API_KEY` - Groq AI API key for comparison generation
-- `JWT_SECRET` - JWT signing secret (minimum 32 characters, REQUIRED)
-
-Optional:
-- `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics
-- `NEXT_PUBLIC_SITE_URL` - Production site URL
+The application serves as a decision-making tool, helping users compare products, services, and concepts through structured analysis, ratings, voting systems, and AI-powered insights.
 
 ## User Preferences
-None documented yet.
 
-## Known Issues
-1. **CSP Warning**: Content Security Policy blocks AdSense script in development (uses placeholder publisher ID). This is expected behavior. Update CSP headers when adding real AdSense credentials for production.
+Preferred communication style: Simple, everyday language.
 
-## Development Workflow
-- **Dev Server**: `npm run dev` (runs on port 5000, bound to 0.0.0.0)
-- **Build**: `npm run build`
-- **Production**: `npm run start` (runs on port 5000, bound to 0.0.0.0)
-- **Testing**: `npm run test` (Playwright tests)
+## System Architecture
 
-## Deployment
-- **Target**: Replit Autoscale
-- **Build Command**: `npm run build`
-- **Start Command**: `npm run start`
-- **Port**: 5000 (configured for Replit)
+### Frontend Architecture
 
-## Security Practices
-- No hardcoded secrets or API keys in code
-- JWT_SECRET validation prevents insecure defaults
-- Client/server separation maintained
-- Supabase Row Level Security policies in place
-- Password hashing with bcryptjs (10 rounds)
+**Framework**: Next.js 14 (App Router)
+- Server-side rendering for optimal SEO and performance
+- Client-side interactivity using React 18
+- TypeScript for type safety across the codebase
+
+**Styling Solution**: Hybrid approach combining:
+- Custom CSS-in-JS with CSS variables for theming
+- Tailwind CSS 4.1.9 for utility classes
+- Shadcn/ui component library for consistent UI elements
+- Custom animations using `tw-animate-css`
+
+**Design Patterns**:
+- **Minimalist Black & White Theme**: High-contrast design focused on readability
+- **Dark Mode Support**: Complete theming system with light/dark/system preferences
+- **Responsive Design**: Mobile-first approach with breakpoint-based layouts
+- **Component Composition**: Reusable UI components following atomic design principles
+
+**Key Features**:
+- Bilingual support (English/Arabic) with RTL layout handling
+- Keyboard navigation and WCAG 2.1 AA accessibility compliance
+- Progressive enhancement with graceful degradation
+- Custom hooks for theme management, keyboard navigation, and focus management
+
+### Backend Architecture
+
+**Database**: Supabase (PostgreSQL)
+- Row-Level Security (RLS) policies for data protection
+- Tables for comparisons, admin users, votes, ratings, comments, and user profiles
+- Migration-based schema management
+
+**Authentication & Authorization**:
+- JWT-based admin authentication using `jose` library
+- bcryptjs for password hashing
+- HTTP-only cookies for session management
+- Middleware-based session validation
+
+**API Design**:
+- RESTful API routes using Next.js Route Handlers
+- Server-side validation and sanitization (DOMPurify)
+- Rate limiting for AI generation endpoints
+- Error handling with structured error responses
+
+**AI Integration**:
+- Groq SDK for AI-powered comparisons
+- Uses Llama 3.1 70B Versatile model
+- Structured prompt engineering for consistent output
+- Fallback handling for API failures
+
+**Security Measures**:
+- Security headers (CSP, HSTS, X-Frame-Options, etc.) via middleware
+- Input sanitization on all user-generated content
+- CSRF protection through SameSite cookie attributes
+- Environment variable validation on startup
+
+### Data Storage Solutions
+
+**Primary Database**: Supabase PostgreSQL
+- Stores comparison data, user profiles, votes, ratings, comments
+- Historical price tracking for products
+- Admin moderation queues and analytics data
+
+**Client-Side Storage**: localStorage
+- User favorites persistence
+- Theme preferences
+- Browsing history tracking
+
+**Static Assets**: 
+- Images and media files served from `/public` directory
+- Optimization through Next.js Image component
+
+### Content Management
+
+**Static Comparisons**:
+- 70+ pre-written comparisons stored in `comparisons-data.ts`
+- Organized across 8 categories (Technology, Entertainment, Travel, Lifestyle, E-commerce, Automotive, Finance, Food)
+- SEO-optimized with custom metadata per page
+
+**AI-Generated Comparisons**:
+- User-submitted requests stored in database with "pending" status
+- Admin moderation workflow for approval/rejection
+- Approved comparisons become searchable and indexable
+
+**Moderation System**:
+- Admin dashboard with analytics and filtering
+- CSV export functionality for data analysis
+- Batch operations for content management
+
+### SEO & Analytics Architecture
+
+**SEO Features**:
+- Dynamic sitemap generation
+- Structured data (Schema.org) for Organization, Website, Article, FAQ
+- Open Graph and Twitter Card meta tags
+- Canonical URLs and language alternates
+- NAP (Name, Address, Phone) consistency components
+
+**Analytics Integration**:
+- Google Analytics 4 tracking
+- Vercel Analytics for performance monitoring
+- Custom event tracking for user interactions
+
+**Performance Optimization**:
+- Server-side rendering for critical content
+- Image optimization with Next.js Image
+- Code splitting and lazy loading
+- CSS variable-based theming for minimal runtime overhead
+
+### Accessibility Features
+
+**WCAG 2.1 AA Compliance**:
+- Proper heading hierarchy (h1-h6)
+- ARIA labels and landmarks
+- Keyboard navigation support (Tab, Enter, Escape, Arrow keys)
+- Skip to content link (Alt+S)
+- Focus trap in modals and dropdowns
+
+**Color Contrast**:
+- 21:1 contrast ratio in light mode
+- 19.6:1 contrast ratio in dark mode
+- High-contrast focus indicators (3px solid outline)
+
+**Screen Reader Support**:
+- Semantic HTML structure
+- Alt text for images
+- Live regions for dynamic content updates
+
+## External Dependencies
+
+### Third-Party Services
+
+**Supabase** (Database & Authentication Backend)
+- PostgreSQL database hosting
+- Real-time subscriptions (not currently used but available)
+- File storage capabilities (not currently used)
+- Row-Level Security for data access control
+
+**Groq AI** (AI Comparison Generation)
+- API endpoint: Groq SDK for Node.js
+- Model: llama-3.1-70b-versatile
+- Used for generating custom product comparisons
+- Requires API key configuration
+
+**Vercel** (Hosting & Analytics)
+- Deployment platform with automatic CI/CD
+- Edge functions for API routes
+- Performance analytics and monitoring
+
+**Google Analytics 4** (Optional Analytics)
+- Page view tracking
+- User behavior analysis
+- Custom event tracking
+
+### NPM Packages
+
+**Core Framework**:
+- `next@14.2.33` - React framework
+- `react@18.3.1` & `react-dom@18.3.1` - UI library
+- `typescript@22` - Type safety
+
+**Database & Auth**:
+- `@supabase/supabase-js` - Supabase client
+- `@supabase/ssr` - Server-side Supabase helpers
+- `jose` - JWT handling
+- `bcryptjs` - Password hashing
+
+**AI Integration**:
+- `groq-sdk` - Groq AI API client
+
+**UI & Styling**:
+- `tailwindcss@4.1.9` - Utility CSS framework
+- `lucide-react@0.454.0` - Icon library
+- `class-variance-authority` - Component variant management
+- `tailwind-merge` - Conditional class merging
+- `clsx` - Class name utilities
+- Radix UI primitives (via shadcn/ui components)
+
+**Security**:
+- `dompurify@3.0.8` - HTML sanitization
+
+**Development**:
+- `@playwright/test` - End-to-end testing
+- `@types/*` packages - TypeScript definitions
+
+### Environment Variables Required
+
+**Production**:
+- `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
+- `SUPABASE_SERVICE_ROLE_KEY` - Supabase admin key
+- `API-KEY_GROQ_API_KEY` - Groq AI API key
+- `JWT_SECRET` - JWT signing secret (min 32 characters)
+
+**Optional**:
+- `NEXT_PUBLIC_GA_MEASUREMENT_ID` - Google Analytics tracking ID
+- `NEXT_PUBLIC_SITE_URL` - Production site URL
+
+### API Rate Limits & Quotas
+
+**Groq AI**:
+- Rate limiting implemented client-side to prevent abuse
+- Caching not currently implemented but recommended for production
+
+**Supabase**:
+- Free tier limits apply to database operations
+- RLS policies enforce data access restrictions
