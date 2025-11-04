@@ -53,7 +53,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 })
     }
 
-    const stats = await getCachedStats(admin.id)
+    const stats = await getCachedStats(admin.adminId)
 
     return NextResponse.json({
       success: true,
