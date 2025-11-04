@@ -38,12 +38,18 @@ export async function POST(request: NextRequest) {
     const supabase = await createClient()
     const { data: admin, error } = await supabase.from("admin_users").select("*").eq("email", sanitizedEmail).single()
 
+    console.log("[DEBUG] Admin lookup:", { email: sanitizedEmail, found: !!admin, error: error?.message })
+
     if (error || !admin) {
+      console.error("[AUTH ERROR] Admin not found:", { email: sanitizedEmail, error: error?.message })
       return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
     }
 
     const isValidPassword = await verifyPassword(password, admin.password_hash)
+    console.log("[DEBUG] Password validation:", { valid: isValidPassword })
+    
     if (!isValidPassword) {
+      console.error("[AUTH ERROR] Invalid password for:", sanitizedEmail)
       return NextResponse.json({ success: false, error: "Invalid email or password" }, { status: 401 })
     }
 
