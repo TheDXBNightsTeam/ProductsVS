@@ -197,13 +197,13 @@ export async function POST(request: NextRequest) {
         ? sanitizedProduct1
         : sanitizedProduct2,
       recommendation: aiResult.verdict.overall,
-      sections: aiResult.sections,
+      sections: aiResult.comparison_sections,
       faqs: aiResult.faqs,
     }
 
     let savedSuccessfully = false
     try {
-      await saveComparison(sanitizedProduct1, sanitizedProduct2, aiResult.category, comparisonData, sanitizedEmail)
+      await saveComparison(sanitizedProduct1, sanitizedProduct2, aiResult.category, comparisonData, sanitizedEmail || undefined)
       savedSuccessfully = true
     } catch (error) {
       console.error("[v0] Database save failed:", error)
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
         product_a_weaknesses: aiResult.pros_cons.product1.cons,
         product_b_weaknesses: aiResult.pros_cons.product2.cons,
         recommendation: aiResult.verdict.overall,
-        sections: aiResult.sections,
+        sections: aiResult.comparison_sections,
         faqs: aiResult.faqs,
         category: aiResult.category,
       },
