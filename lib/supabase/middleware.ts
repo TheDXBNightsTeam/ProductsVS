@@ -1,5 +1,21 @@
 import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
+import { jwtVerify } from "jose"
+
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key-change-in-production")
+const TOKEN_NAME = "admin_token"
+
+async function verifyAdminToken(request: NextRequest): Promise<boolean> {
+  try {
+    const token = request.cookies.get(TOKEN_NAME)?.value
+    if (!token) return false
+    
+    await jwtVerify(token, JWT_SECRET)
+    return true
+  } catch {
+    return false
+  }
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -46,11 +62,15 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
-  // Protect admin routes - redirect to login if not authenticated
-  if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login") && !user) {
-    const url = request.nextUrl.clone()
-    url.pathname = "/admin/login"
-    return NextResponse.redirect(url)
+  // Protect admin routes - check for admin JWT token
+  if (request.nextUrl.pathname.startsWith("/admin") && !request.nextUrl.pathname.startsWith("/admin/login")) {
+    const isAdminAuthenticated = await verifyAdminToken(request)
+    
+    if (!isAdminAuthenticated) {
+      const url = request.nextUrl.clone()
+      url.pathname = "/admin/login"
+      return NextResponse.redirect(url)
+    }
   }
 
   return supabaseResponse
