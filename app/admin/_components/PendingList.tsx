@@ -1,194 +1,132 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Clock, ArrowUpDown, RefreshCw, Sparkles } from "lucide-react"
-import ComparisonCard from "./ComparisonCard"
-import PreviewModal from "./PreviewModal"
-import RejectModal from "./RejectModal"
+import { CheckCircle, XCircle, Eye, Calendar } from "lucide-react"
 
 interface Comparison {
   id: string
-  product1: string
-  product2: string
+  slug: string
+  product1_name: string
+  product2_name: string
   category: string
-  language: string
+  status: string
   created_at: string
-  content: any
 }
 
 interface PendingListProps {
-  onUpdate: () => void
+  onRefresh: () => void
 }
 
-export default function PendingList({ onUpdate }: PendingListProps) {
+export default function PendingList({ onRefresh }: PendingListProps) {
   const [comparisons, setComparisons] = useState<Comparison[]>([])
   const [loading, setLoading] = useState(true)
-  const [sortBy, setSortBy] = useState<"newest" | "oldest">("newest")
-  const [selectedComparison, setSelectedComparison] = useState<Comparison | null>(null)
-  const [showPreview, setShowPreview] = useState(false)
-  const [showReject, setShowReject] = useState(false)
+  const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   useEffect(() => {
-    loadPending()
-  }, [sortBy])
+    loadComparisons()
+  }, [])
 
-  const loadPending = async () => {
-    setLoading(true)
+  const loadComparisons = async () => {
     try {
-      const response = await fetch(`/api/admin/pending?sort=${sortBy}`)
+      const response = await fetch("/api/admin/pending?sort=newest")
       const data = await response.json()
       if (data.success) {
-        setComparisons(data.comparisons)
+        setComparisons(data.comparisons || [])
       }
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("[v0] Failed to load pending comparisons:", error)
-      }
+      console.error("Failed to load comparisons:", error)
     } finally {
       setLoading(false)
     }
   }
 
-  const handleApprove = async (id: string) => {
+  const handleAction = async (id: string, action: "approve" | "reject") => {
+    setActionLoading(id)
     try {
-      const response = await fetch("/api/admin/approve", {
-        method: "POST",
+      const response = await fetch(`/api/admin/comparisons/${id}`, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comparisonId: id }),
+        body: JSON.stringify({ status: action === "approve" ? "approved" : "rejected" }),
       })
-      const data = await response.json()
-      if (data.success) {
-        await loadPending()
-        onUpdate()
+
+      if (response.ok) {
+        await loadComparisons()
+        onRefresh()
       }
     } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("[v0] Failed to approve:", error)
-      }
+      console.error("Action failed:", error)
+    } finally {
+      setActionLoading(null)
     }
   }
 
-  const handleReject = async (id: string, reason: string) => {
-    try {
-      const response = await fetch("/api/admin/reject", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ comparisonId: id, reason }),
-      })
-      const data = await response.json()
-      if (data.success) {
-        setShowReject(false)
-        setSelectedComparison(null)
-        await loadPending()
-        onUpdate()
-      }
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error("[v0] Failed to reject:", error)
-      }
-    }
-  }
-
-  const handlePreview = (comparison: Comparison) => {
-    setSelectedComparison(comparison)
-    setShowPreview(true)
-  }
-
-  const handleRejectClick = (comparison: Comparison) => {
-    setSelectedComparison(comparison)
-    setShowReject(true)
+  if (loading) {
+    return (
+      <div className="bg-white border border-gray-200 rounded-lg p-8">
+        <div className="flex items-center justify-center">
+          <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/25">
-            <Clock className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-extrabold text-white flex items-center gap-3">
-              Pending Review
-              {comparisons.length > 0 && (
-                <span className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full border border-yellow-500/30 backdrop-blur-sm">
-                  {comparisons.length}
-                </span>
-              )}
-            </h2>
-            <p className="text-sm text-gray-400">Review and moderate AI-generated comparisons</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={loadPending}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white rounded-xl transition-all duration-200 backdrop-blur-sm"
-            title="Refresh"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
-          <button
-            onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
-            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white rounded-xl transition-all duration-200 backdrop-blur-sm"
-          >
-            <ArrowUpDown className="w-4 h-4" />
-            <span className="text-sm font-medium">{sortBy === "newest" ? "Newest First" : "Oldest First"}</span>
-          </button>
-        </div>
+    <div className="bg-white border border-gray-200 rounded-lg">
+      <div className="p-6 border-b border-gray-200">
+        <h2 className="text-xl font-bold text-black">Pending Reviews</h2>
+        <p className="text-sm text-gray-500 mt-1">{comparisons.length} comparisons awaiting review</p>
       </div>
 
-      {/* Content */}
-      {loading ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl mb-4 shadow-lg shadow-purple-500/25">
-            <RefreshCw className="w-8 h-8 text-white animate-spin" />
-          </div>
-          <p className="text-gray-400 font-medium">Loading comparisons...</p>
-        </div>
-      ) : comparisons.length === 0 ? (
-        <div className="text-center py-16">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl mb-4 border border-green-500/20">
-            <Sparkles className="w-10 h-10 text-green-400" />
-          </div>
-          <p className="text-lg text-gray-300 font-semibold mb-2">All caught up!</p>
-          <p className="text-sm text-gray-500">No pending comparisons to review</p>
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {comparisons.map((comparison, index) => (
-            <ComparisonCard
-              key={comparison.id}
-              comparison={comparison}
-              index={index}
-              onPreview={handlePreview}
-              onApprove={handleApprove}
-              onReject={handleRejectClick}
-            />
-          ))}
-        </div>
-      )}
+      <div className="divide-y divide-gray-200">
+        {comparisons.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">No pending comparisons</div>
+        ) : (
+          comparisons.map((comp) => (
+            <div key={comp.id} className="p-6 hover:bg-gray-50 transition-colors">
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-black mb-2">
+                    {comp.product1_name} vs {comp.product2_name}
+                  </h3>
+                  <div className="flex items-center gap-4 text-sm text-gray-500">
+                    <span className="px-2 py-1 bg-gray-100 rounded text-xs">{comp.category}</span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(comp.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                </div>
 
-      {/* Modals */}
-      {showPreview && selectedComparison && (
-        <PreviewModal
-          comparison={selectedComparison}
-          onClose={() => {
-            setShowPreview(false)
-            setSelectedComparison(null)
-          }}
-        />
-      )}
-
-      {showReject && selectedComparison && (
-        <RejectModal
-          comparison={selectedComparison}
-          onReject={handleReject}
-          onClose={() => {
-            setShowReject(false)
-            setSelectedComparison(null)
-          }}
-        />
-      )}
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => window.open(`/comparison/${comp.slug}`, "_blank")}
+                    className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    title="Preview"
+                  >
+                    <Eye className="w-5 h-5" />
+                  </button>
+                  <button
+                    onClick={() => handleAction(comp.id, "approve")}
+                    disabled={actionLoading === comp.id}
+                    className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    <CheckCircle className="w-4 h-4" />
+                    Approve
+                  </button>
+                  <button
+                    onClick={() => handleAction(comp.id, "reject")}
+                    disabled={actionLoading === comp.id}
+                    className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+                  >
+                    <XCircle className="w-4 h-4" />
+                    Reject
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
   )
 }
