@@ -3,11 +3,11 @@ import Groq from "groq-sdk"
 let groqClient: Groq | null = null
 
 function getGroqClient(): Groq {
-  const apiKey = process.env["API-KEY_GROQ_API_KEY"]
+  const apiKey = process.env.GROQ_API_KEY
 
   if (!apiKey) {
     throw new Error(
-      "GROQ_API_KEY is not configured. Please add it to your environment variables in the Vercel dashboard.",
+      "GROQ_API_KEY is not configured. Please add it to your environment variables.",
     )
   }
 
