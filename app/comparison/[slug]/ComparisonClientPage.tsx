@@ -337,7 +337,7 @@ export default function ComparisonClientPage({
                       {comparison.optionA.name}
                     </h3>
                     <ul style={{ listStyle: "none", padding: 0 }}>
-                      {comparison.optionA.pros.map((pro, index) => (
+                      {comparison.optionA.pros.map((pro: string, index: number) => (
                         <li
                           key={index}
                           style={{ marginBottom: "0.75rem", paddingLeft: "1.5rem", position: "relative" }}
@@ -360,7 +360,7 @@ export default function ComparisonClientPage({
                       {comparison.optionB.name}
                     </h3>
                     <ul style={{ listStyle: "none", padding: 0 }}>
-                      {comparison.optionB.pros.map((pro, index) => (
+                      {comparison.optionB.pros.map((pro: string, index: number) => (
                         <li
                           key={index}
                           style={{ marginBottom: "0.75rem", paddingLeft: "1.5rem", position: "relative" }}
