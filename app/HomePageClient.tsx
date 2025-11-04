@@ -228,6 +228,7 @@ export default function HomePageClient() {
               <button
                 type="button"
                 onClick={handleSwap}
+                className="swap-button"
                 aria-label="Swap products (Alt + W)"
                 title="Swap products (Alt + W)"
                 onKeyDown={(e) => {
@@ -237,13 +238,18 @@ export default function HomePageClient() {
                   }
                 }}
                 style={{
-                  padding: "1rem",
+                  padding: "0.75rem",
                   background: "var(--bg-secondary)",
                   border: "2px solid var(--border)",
                   cursor: "pointer",
-                  fontSize: "1.5rem",
+                  fontSize: "1.2rem",
                   marginTop: "2rem",
                   borderRadius: "8px",
+                  minWidth: "48px",
+                  minHeight: "48px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
                 disabled={loading}
               >
@@ -1260,10 +1266,17 @@ export default function HomePageClient() {
         @media (max-width: 768px) {
           form > div:first-child {
             grid-template-columns: 1fr !important;
+            gap: 1rem !important;
           }
 
-          form > div:first-child > button {
+          .swap-button {
             margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding: 0.5rem !important;
+            font-size: 1rem !important;
+            min-width: 40px !important;
+            min-height: 40px !important;
+            align-self: center;
             transform: rotate(90deg);
           }
         }
