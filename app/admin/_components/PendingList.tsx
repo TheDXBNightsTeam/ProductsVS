@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { Clock, ArrowUpDown } from "lucide-react"
 import ComparisonCard from "./ComparisonCard"
 import PreviewModal from "./PreviewModal"
 import RejectModal from "./RejectModal"
@@ -93,30 +94,35 @@ export default function PendingList({ onUpdate }: PendingListProps) {
   }
 
   return (
-    <div className="bg-white border-2 border-gray-200 p-6">
+    <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold flex items-center gap-2">
-          <span>⏳</span>
-          Pending Review ({comparisons.length})
+        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+          <Clock className="w-6 h-6 text-yellow-500" />
+          Pending Review
+          {comparisons.length > 0 && (
+            <span className="bg-yellow-500/20 text-yellow-500 text-sm font-semibold px-3 py-1 rounded-full border border-yellow-500/30">
+              {comparisons.length}
+            </span>
+          )}
         </h2>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as "newest" | "oldest")}
-          className="px-4 py-2 border-2 border-gray-300 focus:border-black focus:outline-none"
+        <button
+          onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
+          className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all duration-200"
         >
-          <option value="newest">Newest First</option>
-          <option value="oldest">Oldest First</option>
-        </select>
+          <ArrowUpDown className="w-4 h-4" />
+          <span className="text-sm">{sortBy === "newest" ? "Newest First" : "Oldest First"}</span>
+        </button>
       </div>
 
       {loading ? (
         <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-300 border-t-black"></div>
+          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-700 border-t-white"></div>
         </div>
       ) : comparisons.length === 0 ? (
-        <div className="text-center py-12 text-gray-500">
-          <p className="text-lg">No pending comparisons</p>
-          <p className="text-sm mt-2">All caught up! 🎉</p>
+        <div className="text-center py-12">
+          <Clock className="w-16 h-16 text-gray-700 mx-auto mb-4" />
+          <p className="text-lg text-gray-400 font-medium">No pending comparisons</p>
+          <p className="text-sm text-gray-500 mt-2">All caught up!</p>
         </div>
       ) : (
         <div className="space-y-4">

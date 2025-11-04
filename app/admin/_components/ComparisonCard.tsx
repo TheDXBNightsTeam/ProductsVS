@@ -1,5 +1,7 @@
 "use client"
 
+import { Folder, Globe, Clock, Eye, CheckCircle, XCircle } from "lucide-react"
+
 interface Comparison {
   id: string
   product1: string
@@ -7,6 +9,7 @@ interface Comparison {
   category: string
   language: string
   created_at: string
+  content: any
 }
 
 interface ComparisonCardProps {
@@ -27,26 +30,28 @@ export default function ComparisonCard({ comparison, index, onPreview, onApprove
   }
 
   return (
-    <div className="border-2 border-gray-200 p-4 hover:border-gray-400 transition-colors">
+    <div className="bg-gray-800 border border-gray-700 p-5 rounded-lg hover:border-gray-600 transition-all duration-200 hover:shadow-lg">
       <div className="flex justify-between items-start">
         <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="font-bold text-gray-400">#{index + 1}</span>
-            <h3 className="text-lg font-bold">
-              {comparison.product1} vs {comparison.product2}
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-xs font-bold text-gray-500 bg-gray-900 px-2 py-1 rounded">
+              #{index + 1}
+            </span>
+            <h3 className="text-lg font-bold text-white">
+              {comparison.product1} <span className="text-gray-600">vs</span> {comparison.product2}
             </h3>
           </div>
-          <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-            <span className="flex items-center gap-1">
-              <span>📁</span>
+          <div className="flex items-center gap-4 text-sm text-gray-400">
+            <span className="flex items-center gap-1.5">
+              <Folder className="w-4 h-4" />
               {comparison.category}
             </span>
-            <span className="flex items-center gap-1">
-              <span>🌐</span>
+            <span className="flex items-center gap-1.5">
+              <Globe className="w-4 h-4" />
               {comparison.language.toUpperCase()}
             </span>
-            <span className="flex items-center gap-1">
-              <span>⏰</span>
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-4 h-4" />
               {timeAgo(comparison.created_at)}
             </span>
           </div>
@@ -56,21 +61,24 @@ export default function ComparisonCard({ comparison, index, onPreview, onApprove
       <div className="flex gap-2 mt-4">
         <button
           onClick={() => onPreview(comparison)}
-          className="px-4 py-2 bg-gray-100 hover:bg-gray-200 border-2 border-gray-300 font-semibold text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 border border-gray-600 text-gray-200 font-medium text-sm rounded-lg transition-all duration-200"
         >
-          👁️ Preview
+          <Eye className="w-4 h-4" />
+          Preview
         </button>
         <button
           onClick={() => onApprove(comparison.id)}
-          className="px-4 py-2 bg-green-50 hover:bg-green-100 border-2 border-green-300 text-green-700 font-semibold text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-green-900/40 hover:bg-green-900/60 border border-green-700 text-green-400 font-medium text-sm rounded-lg transition-all duration-200"
         >
-          ✅ Approve
+          <CheckCircle className="w-4 h-4" />
+          Approve
         </button>
         <button
           onClick={() => onReject(comparison)}
-          className="px-4 py-2 bg-red-50 hover:bg-red-100 border-2 border-red-300 text-red-700 font-semibold text-sm transition-colors"
+          className="flex items-center gap-2 px-4 py-2 bg-red-900/40 hover:bg-red-900/60 border border-red-700 text-red-400 font-medium text-sm rounded-lg transition-all duration-200"
         >
-          ❌ Reject
+          <XCircle className="w-4 h-4" />
+          Reject
         </button>
       </div>
     </div>
