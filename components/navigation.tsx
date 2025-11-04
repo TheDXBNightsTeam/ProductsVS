@@ -210,17 +210,17 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
         }
 
         .nav-container {
-          max-width: 1100px;
+          max-width: 1200px;
           margin: 0 auto;
-          padding: var(--spacing-lg);
+          padding: 1rem 1.5rem;
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: var(--spacing-lg);
+          gap: 1.5rem;
         }
 
         .nav-logo {
-          font-size: var(--font-xl);
+          font-size: 1.5rem;
           font-weight: 600;
           color: var(--text);
           text-decoration: none;
@@ -239,8 +239,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
         }
 
         .search-form {
-          flex: 1;
-          max-width: 400px;
+          flex: 0 1 280px;
         }
 
         .mobile-search-form {
@@ -263,17 +262,19 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
 
         .search-input {
           width: 100%;
-          padding: var(--spacing-sm) var(--spacing-md) var(--spacing-sm) 40px;
+          padding: 0.5rem 0.75rem 0.5rem 36px;
           border: 1px solid var(--border);
           background: var(--bg);
           color: var(--text);
-          font-size: var(--font-sm);
+          font-size: 0.875rem;
           transition: all var(--transition);
+          border-radius: 6px;
         }
 
         .search-input:focus {
           outline: none;
           border-color: var(--text);
+          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
         }
 
         .search-input::placeholder {
@@ -282,19 +283,20 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
 
         .nav-links {
           display: flex;
-          gap: var(--spacing-xl);
+          gap: 1.5rem;
           align-items: center;
+          flex-wrap: wrap;
         }
 
         .nav-link {
           color: var(--text-secondary);
           text-decoration: none;
-          font-size: var(--font-sm);
+          font-size: 0.813rem;
           font-weight: 500;
           transition: color var(--transition);
           border: none;
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.05em;
           white-space: nowrap;
         }
 
@@ -304,18 +306,19 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
         }
 
         .lang-btn {
-          padding: var(--spacing-xs) var(--spacing-md);
+          padding: 0.4rem 0.75rem;
           background: var(--text);
           color: var(--bg);
           border: 1px solid var(--text);
           font-weight: 500;
-          font-size: var(--font-sm);
+          font-size: 0.813rem;
           cursor: pointer;
           transition: all var(--transition);
           text-transform: uppercase;
-          letter-spacing: 0.1em;
+          letter-spacing: 0.05em;
           display: inline-block;
           white-space: nowrap;
+          border-radius: 4px;
         }
 
         .lang-btn:hover {
