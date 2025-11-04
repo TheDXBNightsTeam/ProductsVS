@@ -244,23 +244,18 @@ export default function ComparisonClientPage({
       {isPending && (
         <div
           style={{
-            background: "linear-gradient(135deg, #FFA500 0%, #FF8C00 100%)",
-            color: "#fff",
-            padding: "1.5rem",
+            background: "#fff3cd",
+            color: "#856404",
+            padding: "1rem 1.5rem",
             textAlign: "center",
             marginBottom: "2rem",
-            borderRadius: "12px",
-            border: "3px solid #FF8C00",
+            borderRadius: "8px",
+            border: "2px solid #ffc107",
           }}
         >
-          <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>⏳</div>
-          <h3 style={{ fontSize: "1.3rem", fontWeight: 700, marginBottom: "0.5rem" }}>
-            This Comparison is Under Review
-          </h3>
-          <p style={{ opacity: 0.95, fontSize: "1rem" }}>
-            This AI-generated comparison is currently being reviewed by our team. Once approved, it will be publicly
-            available and indexed by search engines.
-          </p>
+          <strong style={{ fontSize: "0.95rem" }}>
+            ⏳ قيد المراجعة: هذه المقارنة قيد المراجعة وستُنشر بعد الموافقة
+          </strong>
         </div>
       )}
 

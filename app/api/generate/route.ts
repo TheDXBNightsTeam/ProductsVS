@@ -158,16 +158,20 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    console.log("[v0] Generating comparison with AI:", {
-      product1: sanitizedProduct1,
-      product2: sanitizedProduct2,
-      category,
-    })
+    if (process.env.NODE_ENV === "development") {
+      console.log("[v0] Generating comparison with AI:", {
+        product1: sanitizedProduct1,
+        product2: sanitizedProduct2,
+        category,
+      })
+    }
 
     let aiResult
     try {
       aiResult = await generateComparison(sanitizedProduct1, sanitizedProduct2, category, language)
-      console.log("[v0] AI generation successful")
+      if (process.env.NODE_ENV === "development") {
+        console.log("[v0] AI generation successful")
+      }
     } catch (error) {
       console.error("[v0] AI generation failed:", error)
       const errorMessage = error instanceof Error ? error.message : "Unknown error"
@@ -197,8 +201,10 @@ export async function POST(request: NextRequest) {
       faqs: aiResult.faqs,
     }
 
+    let savedSuccessfully = false
     try {
       await saveComparison(sanitizedProduct1, sanitizedProduct2, aiResult.category, comparisonData, sanitizedEmail)
+      savedSuccessfully = true
     } catch (error) {
       console.error("[v0] Database save failed:", error)
       // Don't fail the request if database save fails - user still gets the comparison
@@ -206,9 +212,11 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      status: "generated",
+      status: savedSuccessfully ? "pending" : "generated",
       message: "Comparison generated successfully!",
       slug,
+      comparisonUrl: `/comparison/${slug}`,
+      isPending: savedSuccessfully,
       data: {
         title: `${sanitizedProduct1} vs ${sanitizedProduct2}`,
         optionA: { name: sanitizedProduct1 },

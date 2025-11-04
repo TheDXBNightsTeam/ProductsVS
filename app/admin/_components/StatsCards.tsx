@@ -1,4 +1,4 @@
-import { Clock, BarChart3, CheckCircle, XCircle } from "lucide-react"
+import { Clock, BarChart3, CheckCircle, XCircle, TrendingUp } from "lucide-react"
 
 interface Stats {
   totalComparisons: number
@@ -17,33 +17,41 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       label: "Pending Reviews",
       value: stats?.pendingReviews ?? 0,
       icon: Clock,
-      color: "text-yellow-500",
-      bg: "bg-yellow-500/10",
-      border: "border-yellow-500/20",
+      gradient: "from-yellow-500 to-orange-500",
+      bgGradient: "from-yellow-500/10 to-orange-500/10",
+      borderColor: "border-yellow-500/20",
+      textColor: "text-yellow-400",
+      iconBg: "bg-yellow-500/20",
     },
     {
       label: "Total Comparisons",
       value: stats?.totalComparisons ?? 0,
       icon: BarChart3,
-      color: "text-blue-500",
-      bg: "bg-blue-500/10",
-      border: "border-blue-500/20",
+      gradient: "from-blue-500 to-cyan-500",
+      bgGradient: "from-blue-500/10 to-cyan-500/10",
+      borderColor: "border-blue-500/20",
+      textColor: "text-blue-400",
+      iconBg: "bg-blue-500/20",
     },
     {
       label: "Approved Today",
       value: stats?.approvedToday ?? 0,
       icon: CheckCircle,
-      color: "text-green-500",
-      bg: "bg-green-500/10",
-      border: "border-green-500/20",
+      gradient: "from-green-500 to-emerald-500",
+      bgGradient: "from-green-500/10 to-emerald-500/10",
+      borderColor: "border-green-500/20",
+      textColor: "text-green-400",
+      iconBg: "bg-green-500/20",
     },
     {
       label: "Rejected Today",
       value: stats?.rejectedToday ?? 0,
       icon: XCircle,
-      color: "text-red-500",
-      bg: "bg-red-500/10",
-      border: "border-red-500/20",
+      gradient: "from-red-500 to-pink-500",
+      bgGradient: "from-red-500/10 to-pink-500/10",
+      borderColor: "border-red-500/20",
+      textColor: "text-red-400",
+      iconBg: "bg-red-500/20",
     },
   ]
 
@@ -54,13 +62,30 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         return (
           <div
             key={card.label}
-            className={`p-6 bg-gray-900 border ${card.border} rounded-lg transition-all duration-200 hover:scale-105 hover:shadow-lg`}
+            className={`group relative p-6 bg-gradient-to-br ${card.bgGradient} border ${card.borderColor} rounded-2xl transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-${card.gradient.split(' ')[1]}/20 overflow-hidden`}
           >
-            <div className={`w-12 h-12 ${card.bg} rounded-lg flex items-center justify-center mb-4`}>
-              <Icon className={`w-6 h-6 ${card.color}`} />
+            {/* Animated Background Gradient */}
+            <div className={`absolute inset-0 bg-gradient-to-br ${card.gradient} opacity-0 group-hover:opacity-5 transition-opacity duration-300`}></div>
+            
+            {/* Content */}
+            <div className="relative z-10">
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-14 h-14 ${card.iconBg} rounded-xl flex items-center justify-center backdrop-blur-sm border ${card.borderColor}`}>
+                  <Icon className={`w-7 h-7 ${card.textColor}`} />
+                </div>
+                <div className="flex items-center gap-1 text-xs font-semibold text-gray-400">
+                  <TrendingUp className="w-3 h-3" />
+                  <span>+12%</span>
+                </div>
+              </div>
+              <div className="space-y-1">
+                <div className={`text-4xl font-extrabold ${card.textColor} mb-1`}>{card.value}</div>
+                <div className="text-sm font-medium text-gray-400">{card.label}</div>
+              </div>
             </div>
-            <div className="text-3xl font-extrabold text-white mb-2">{card.value}</div>
-            <div className="text-sm font-medium text-gray-400">{card.label}</div>
+
+            {/* Shine Effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></div>
           </div>
         )
       })}

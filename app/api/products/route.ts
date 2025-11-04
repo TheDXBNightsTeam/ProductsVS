@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server"
 
-export const dynamic = 'force-dynamic'
+// Cache products for 5 minutes (300 seconds) - static data
+export const revalidate = 300
 
 export async function GET(request: Request) {
   try {
@@ -8,8 +9,9 @@ export async function GET(request: Request) {
     const category = searchParams.get("category")
     const locale = searchParams.get("locale") || "en"
 
-    // TODO: Replace with actual database query
-    // For now, return mock data
+    // Note: This endpoint returns mock data
+    // To implement: Query the comparisons table from Supabase with filtering by category and locale
+    // Example: SELECT * FROM comparisons WHERE is_published = true AND category = $1
     const mockProducts = [
       {
         id: "1",

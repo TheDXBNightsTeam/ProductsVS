@@ -26,10 +26,33 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     }
   }
 
+  // Check if comparison is pending
+  const isPendingComparison = source === "dynamic" && isPending
+
   return {
     title: `${comparison.title} | Products VS`,
     description: comparison.description,
     keywords: `${comparison.optionA.name}, ${comparison.optionB.name}, comparison, ${comparison.category}`,
+    robots: isPendingComparison
+      ? {
+          index: false,
+          follow: false,
+          googleBot: {
+            index: false,
+            follow: false,
+          },
+        }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            "max-video-preview": -1,
+            "max-image-preview": "large",
+            "max-snippet": -1,
+          },
+        },
     openGraph: {
       title: comparison.title,
       description: comparison.description,
@@ -58,8 +81,10 @@ export default async function ComparisonPage({ params }: { params: { slug: strin
       comparison = dynamicComp
       source = "dynamic"
       isPending = dynamicComp.status === "pending"
-      // Increment views for all dynamic comparisons
-      await incrementViews(params.slug)
+      // Only increment views for approved comparisons (pending don't need views tracking)
+      if (!isPending) {
+        await incrementViews(params.slug)
+      }
     }
   }
 

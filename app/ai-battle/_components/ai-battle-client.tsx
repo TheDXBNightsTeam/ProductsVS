@@ -172,19 +172,111 @@ export default function AIBattleClient() {
           </form>
 
           {loading && (
-            <div style={{ textAlign: "center", padding: "3rem", marginTop: "2rem" }}>
+            <div style={{ marginTop: "2rem" }}>
+              {/* Enhanced Loading State */}
               <div
                 style={{
-                  width: "50px",
-                  height: "50px",
-                  border: "4px solid var(--border)",
-                  borderTop: "4px solid var(--text)",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                  margin: "0 auto",
+                  textAlign: "center",
+                  padding: "3rem",
+                  background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)",
+                  borderRadius: "20px",
+                  border: "2px solid #e9ecef",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                 }}
-              />
-              <p style={{ marginTop: "1rem", fontSize: "1.1rem", opacity: 0.7 }}>AI is analyzing your comparison...</p>
+              >
+                {/* Animated Spinner */}
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    margin: "0 auto 2rem",
+                    position: "relative",
+                  }}
+                >
+                  {/* Outer rotating ring */}
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderRadius: "50%",
+                      background: "conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea)",
+                      padding: "4px",
+                      animation: "spin 1s linear infinite",
+                      boxShadow: "0 8px 24px rgba(102, 126, 234, 0.3)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        background: "#ffffff",
+                      }}
+                    />
+                  </div>
+                  {/* Inner pulsing dot */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      animation: "pulse 1.5s ease-in-out infinite",
+                      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.5)",
+                    }}
+                  />
+                </div>
+
+                {/* Loading Text */}
+                <div>
+                  <p
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: 700,
+                      color: "#333",
+                      marginBottom: "0.5rem",
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    AI is analyzing your comparison...
+                  </p>
+                  <p style={{ fontSize: "1rem", color: "var(--text-secondary)", opacity: 0.8 }}>
+                    This may take a few moments
+                  </p>
+                </div>
+
+                {/* Progress Dots */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    justifyContent: "center",
+                    marginTop: "1.5rem",
+                  }}
+                >
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        animation: `bounce 1.4s ease-in-out infinite`,
+                        animationDelay: `${i * 0.2}s`,
+                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.4)",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
           )}
 

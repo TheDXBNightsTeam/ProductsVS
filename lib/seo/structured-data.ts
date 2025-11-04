@@ -109,7 +109,7 @@ export function generateArticleSchema(article: {
       name: "Products VS",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.productsvs.com/images/logo.png",
+        url: `${process.env.NEXT_PUBLIC_SITE_URL || "https://www.productsvs.com"}/images/logo.png`,
       },
     },
     image: article.image,

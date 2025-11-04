@@ -6,6 +6,9 @@ import { useState, useRef } from "react"
 import PageLayout from "@/components/page-layout"
 import Link from "next/link"
 import PendingBanner from "@/components/PendingBanner"
+import ComparisonLoadingSkeleton from "@/components/ComparisonLoadingSkeleton"
+import ErrorDisplay from "@/components/ErrorDisplay"
+import SuccessAnimation from "@/components/SuccessAnimation"
 import { useKeyboardNavigation } from "@/lib/hooks/use-keyboard-navigation"
 
 export default function HomePageClient() {
@@ -14,6 +17,10 @@ export default function HomePageClient() {
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<any>(null)
   const [isPending, setIsPending] = useState(false)
+  const [comparisonSlug, setComparisonSlug] = useState<string | null>(null)
+  const [comparisonStatus, setComparisonStatus] = useState<"pending" | "approved" | "generated" | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
 
   const formRef = useRef<HTMLFormElement>(null)
 
@@ -24,6 +31,10 @@ export default function HomePageClient() {
         setProductB("")
         setResult(null)
         setIsPending(false)
+        setComparisonSlug(null)
+        setComparisonStatus(null)
+        setError(null)
+        setShowSuccess(false)
       }
     },
   })
@@ -32,16 +43,19 @@ export default function HomePageClient() {
     e.preventDefault()
 
     if (!productA.trim() || !productB.trim()) {
-      alert("Please enter both products to compare")
+      setError("Please enter both products to compare")
       return
     }
 
     setLoading(true)
+    setError(null)
     setResult(null)
     setIsPending(false)
 
     try {
+      if (process.env.NODE_ENV === "development") {
       console.log("[v0] Sending comparison request:", { productA, productB })
+      }
 
       const response = await fetch("/api/generate", {
         method: "POST",
@@ -53,8 +67,6 @@ export default function HomePageClient() {
           product2: productB.trim(),
         }),
       })
-
-      console.log("[v0] Response status:", response.status)
 
       let data
       const contentType = response.headers.get("content-type")
@@ -68,14 +80,24 @@ export default function HomePageClient() {
         throw new Error("Server returned an invalid response. Please check if the API key is configured.")
       }
 
-      console.log("[v0] Response data:", data)
-
       if (!response.ok) {
         throw new Error(data.error || `Server error: ${response.status}`)
       }
 
       if (data.success && data.data) {
-        console.log("[v0] Comparison generated successfully")
+        // Debug logging only in development
+        if (process.env.NODE_ENV === "development") {
+          console.log("[v0] Comparison generated successfully")
+        }
+        
+        // Set comparison status and slug
+        setComparisonStatus(data.status || "generated")
+        setComparisonSlug(data.slug || null)
+        
+        // Always show result immediately, regardless of status
+        // If already approved, still show result but can redirect
+        if (data.status === "approved" && data.slug) {
+          // Show result briefly then redirect
         setResult({
           productA: data.data.optionA.name,
           productB: data.data.optionB.name,
@@ -87,16 +109,62 @@ export default function HomePageClient() {
           weaknessesA: data.data.product_a_weaknesses || [],
           weaknessesB: data.data.product_b_weaknesses || [],
           recommendation: data.data.recommendation || "",
+            isPending: data.isPending || false,
+            slug: data.slug,
+            comparisonUrl: data.comparisonUrl,
+          })
+          // Redirect after showing result
+          setTimeout(() => {
+            window.location.href = data.comparisonUrl || `/comparison/${data.slug}`
+          }, 2000)
+          return
+        }
+        
+        // Show result immediately (pending or generated)
+        setIsPending(false) // Don't show PendingBanner, show result instead
+        setResult({
+          productA: data.data.optionA.name,
+          productB: data.data.optionB.name,
+          summary: data.data.summary,
+          scoreA: data.data.product_a_score || 85,
+          scoreB: data.data.product_b_score || 80,
+          strengthsA: data.data.product_a_strengths || [],
+          strengthsB: data.data.product_b_strengths || [],
+          weaknessesA: data.data.product_a_weaknesses || [],
+          weaknessesB: data.data.product_b_weaknesses || [],
+          recommendation: data.data.recommendation || "",
+          isPending: data.isPending || false,
+          slug: data.slug,
+          comparisonUrl: data.comparisonUrl,
         })
+        
+        // Show success animation
+        setShowSuccess(true)
       } else {
         throw new Error(data.error || "Failed to generate comparison")
       }
     } catch (error) {
       console.error("[v0] Error generating comparison:", error)
       const errorMessage = error instanceof Error ? error.message : "Failed to generate comparison. Please try again."
-      alert(errorMessage)
+      
+      // Determine error type
+      let variant: "error" | "warning" | "info" = "error"
+      if (errorMessage.includes("rate limit") || errorMessage.includes("Rate limit")) {
+        variant = "warning"
+      } else if (errorMessage.includes("network") || errorMessage.includes("connection")) {
+        variant = "info"
+      }
+      
+      setError(errorMessage)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleRetry = () => {
+    setError(null)
+    if (productA.trim() && productB.trim()) {
+      handleCompare(new Event("submit") as any)
     }
   }
 
@@ -115,7 +183,10 @@ export default function HomePageClient() {
 
   const handleShare = (platform: string) => {
     const text = `Check out this comparison: ${result.productA} vs ${result.productB}`
-    const url = window.location.href
+    // Use comparison URL if available, otherwise use current page
+    const url = result.comparisonUrl 
+      ? `${window.location.origin}${result.comparisonUrl}`
+      : window.location.href
 
     switch (platform) {
       case "twitter":
@@ -153,12 +224,22 @@ export default function HomePageClient() {
   }
 
   const handleEmailNotification = (email: string) => {
-    console.log("[v0] Email notification requested:", email)
-    // TODO: Send email to backend API to store for notification
+    // Email notification feature - store email in database for future notifications
+    // This can be implemented by creating an API endpoint to store notification preferences
+    // Debug logging only in development
+    if (process.env.NODE_ENV === "development") {
+      console.log("[v0] Email notification requested:", email)
+    }
   }
 
   return (
     <PageLayout currentPath="/">
+      {/* Success Animation */}
+      <SuccessAnimation
+        show={showSuccess}
+        onComplete={() => setShowSuccess(false)}
+        message="Comparison Generated Successfully!"
+      />
       <section className="hero-section" style={{ padding: "80px 0", textAlign: "center" }}>
         <div className="container">
           <h1 style={{ fontSize: "3.5rem", fontWeight: 800, marginBottom: "1.5rem", lineHeight: 1.2 }}>
@@ -312,32 +393,130 @@ export default function HomePageClient() {
           </form>
 
           {loading && (
-            <div style={{ textAlign: "center", padding: "3rem", marginTop: "2rem" }}>
+            <div style={{ marginTop: "2rem" }}>
+              {/* Enhanced Loading State */}
               <div
                 style={{
-                  width: "50px",
-                  height: "50px",
-                  border: "4px solid var(--border)",
-                  borderTop: "4px solid var(--text)",
-                  borderRadius: "50%",
-                  animation: "spin 1s linear infinite",
-                  margin: "0 auto",
+                  textAlign: "center",
+                  padding: "3rem",
+                  background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)",
+                  borderRadius: "20px",
+                  border: "2px solid #e9ecef",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                 }}
-              />
-              <p style={{ marginTop: "1rem", fontSize: "1.1rem", opacity: 0.7 }}>AI is analyzing your comparison...</p>
+              >
+                {/* Animated Spinner */}
+                <div
+                  style={{
+                    width: "80px",
+                    height: "80px",
+                    margin: "0 auto 2rem",
+                    position: "relative",
+                  }}
+                >
+                  {/* Outer rotating ring */}
+                  <div
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                  borderRadius: "50%",
+                      background: "conic-gradient(from 0deg, #667eea, #764ba2, #f093fb, #667eea)",
+                      padding: "4px",
+                  animation: "spin 1s linear infinite",
+                      boxShadow: "0 8px 24px rgba(102, 126, 234, 0.3)",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        borderRadius: "50%",
+                        background: "#ffffff",
+                      }}
+                    />
+            </div>
+                  {/* Inner pulsing dot */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "50%",
+                      left: "50%",
+                      transform: "translate(-50%, -50%)",
+                      width: "20px",
+                      height: "20px",
+                      borderRadius: "50%",
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      animation: "pulse 1.5s ease-in-out infinite",
+                      boxShadow: "0 4px 12px rgba(102, 126, 234, 0.5)",
+                    }}
+                  />
+                </div>
+
+                {/* Loading Text */}
+                <div>
+                  <p
+                    style={{
+                      fontSize: "1.3rem",
+                      fontWeight: 700,
+                      color: "#333",
+                      marginBottom: "0.5rem",
+                      background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      backgroundClip: "text",
+                    }}
+                  >
+                    AI is analyzing your comparison...
+                  </p>
+                  <p style={{ fontSize: "1rem", color: "var(--text-secondary)", opacity: 0.8 }}>
+                    This may take a few moments
+                  </p>
+                </div>
+
+                {/* Progress Dots */}
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "0.5rem",
+                    justifyContent: "center",
+                    marginTop: "1.5rem",
+                  }}
+                >
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      style={{
+                        width: "12px",
+                        height: "12px",
+                        borderRadius: "50%",
+                        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                        animation: `bounce 1.4s ease-in-out infinite`,
+                        animationDelay: `${i * 0.2}s`,
+                        boxShadow: "0 2px 8px rgba(102, 126, 234, 0.4)",
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+
+              {/* Skeleton Preview */}
+              <ComparisonLoadingSkeleton />
             </div>
           )}
 
-          {isPending && !loading && (
-            <PendingBanner
-              product1={productA}
-              product2={productB}
-              submittedAt={new Date().toISOString()}
-              onEmailSubmit={handleEmailNotification}
+          {/* Error Display */}
+          {error && !loading && (
+            <ErrorDisplay
+              title={error.includes("rate limit") ? "Rate Limit Exceeded" : "Error Generating Comparison"}
+              message={error}
+              onRetry={handleRetry}
+              showRetry={true}
+              showHome={false}
+              variant={error.includes("rate limit") ? "warning" : error.includes("network") ? "info" : "error"}
             />
           )}
 
-          {result && !loading && !isPending && (
+          {result && !loading && !error && (
             <div style={{ marginTop: "3rem", animation: "fadeIn 0.5s ease-in" }}>
               <div
                 style={{
@@ -354,32 +533,92 @@ export default function HomePageClient() {
                     {result.productA} vs {result.productB}
                   </h2>
                   <p style={{ fontSize: "1.1rem", opacity: 0.7 }}>AI-Powered Comparison Results</p>
+                  {result.comparisonUrl && (
+                    <Link
+                      href={result.comparisonUrl}
+                      style={{
+                        display: "inline-block",
+                        marginTop: "1rem",
+                        padding: "0.75rem 1.5rem",
+                        background: "#000",
+                        color: "#fff",
+                        borderRadius: "8px",
+                        textDecoration: "none",
+                        fontWeight: 600,
+                        fontSize: "0.95rem",
+                        transition: "all 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.background = "#333"
+                        e.currentTarget.style.transform = "translateY(-2px)"
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.background = "#000"
+                        e.currentTarget.style.transform = "translateY(0)"
+                      }}
+                    >
+                      عرض الصفحة الكاملة →
+                    </Link>
+                  )}
                 </div>
 
-                {/* Score Comparison */}
+                {/* Score Comparison - Enhanced Design */}
                 <div
                   style={{
                     display: "grid",
                     gridTemplateColumns: "1fr auto 1fr",
-                    gap: "2rem",
+                    gap: "2.5rem",
                     alignItems: "center",
-                    marginBottom: "2rem",
+                    marginBottom: "2.5rem",
+                    padding: "2rem",
+                    background: "linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%)",
+                    borderRadius: "20px",
+                    border: "2px solid #e9ecef",
                   }}
                 >
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "3rem", fontWeight: 800, marginBottom: "0.5rem" }}>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "1.5rem",
+                      background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
+                      borderRadius: "16px",
+                      border: `3px solid ${result.scoreA >= (result.scoreB || 80) ? "#4CAF50" : "#e0e0e0"}`,
+                      boxShadow: result.scoreA >= (result.scoreB || 80) ? "0 8px 24px rgba(76, 175, 80, 0.2)" : "0 4px 12px rgba(0,0,0,0.08)",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "4rem",
+                        fontWeight: 900,
+                        marginBottom: "0.5rem",
+                        background: "linear-gradient(135deg, #4CAF50 0%, #45a049 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
                       {result.scoreA || 85}
                       {result.scoreA >= (result.scoreB || 80) && (
-                        <span style={{ fontSize: "2rem", marginLeft: "0.5rem" }}>👑</span>
+                        <span
+                          style={{
+                            fontSize: "2.5rem",
+                            marginLeft: "0.5rem",
+                            filter: "drop-shadow(0 2px 4px rgba(76, 175, 80, 0.3))",
+                          }}
+                        >
+                          👑
+                        </span>
                       )}
                     </div>
                     <div
                       style={{
-                        height: "12px",
+                        height: "16px",
                         background: "#e0e0e0",
-                        borderRadius: "6px",
+                        borderRadius: "8px",
                         overflow: "hidden",
-                        marginBottom: "0.5rem",
+                        marginBottom: "1rem",
+                        boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)",
                       }}
                     >
                       <div
@@ -387,29 +626,69 @@ export default function HomePageClient() {
                           height: "100%",
                           width: `${result.scoreA || 85}%`,
                           background: "linear-gradient(90deg, #4CAF50 0%, #45a049 100%)",
-                          transition: "width 1s ease-out",
+                          transition: "width 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                          boxShadow: "0 2px 8px rgba(76, 175, 80, 0.4)",
                         }}
                       />
                     </div>
-                    <p style={{ fontWeight: 600, fontSize: "1.1rem" }}>{result.productA}</p>
+                    <p style={{ fontWeight: 700, fontSize: "1.2rem", color: "#333" }}>{result.productA}</p>
                   </div>
 
-                  <div style={{ fontSize: "2rem", opacity: 0.3 }}>VS</div>
+                  <div
+                    style={{
+                      fontSize: "2.5rem",
+                      fontWeight: 800,
+                      opacity: 0.4,
+                      color: "#666",
+                      textShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    VS
+                  </div>
 
-                  <div style={{ textAlign: "center" }}>
-                    <div style={{ fontSize: "3rem", fontWeight: 800, marginBottom: "0.5rem" }}>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "1.5rem",
+                      background: "linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%)",
+                      borderRadius: "16px",
+                      border: `3px solid ${result.scoreB > (result.scoreA || 85) ? "#2196F3" : "#e0e0e0"}`,
+                      boxShadow: result.scoreB > (result.scoreA || 85) ? "0 8px 24px rgba(33, 150, 243, 0.2)" : "0 4px 12px rgba(0,0,0,0.08)",
+                      transition: "all 0.3s ease",
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: "4rem",
+                        fontWeight: 900,
+                        marginBottom: "0.5rem",
+                        background: "linear-gradient(135deg, #2196F3 0%, #1976D2 100%)",
+                        WebkitBackgroundClip: "text",
+                        WebkitTextFillColor: "transparent",
+                        backgroundClip: "text",
+                      }}
+                    >
                       {result.scoreB || 80}
                       {result.scoreB > (result.scoreA || 85) && (
-                        <span style={{ fontSize: "2rem", marginLeft: "0.5rem" }}>👑</span>
+                        <span
+                          style={{
+                            fontSize: "2.5rem",
+                            marginLeft: "0.5rem",
+                            filter: "drop-shadow(0 2px 4px rgba(33, 150, 243, 0.3))",
+                          }}
+                        >
+                          👑
+                        </span>
                       )}
                     </div>
                     <div
                       style={{
-                        height: "12px",
+                        height: "16px",
                         background: "#e0e0e0",
-                        borderRadius: "6px",
+                        borderRadius: "8px",
                         overflow: "hidden",
-                        marginBottom: "0.5rem",
+                        marginBottom: "1rem",
+                        boxShadow: "inset 0 2px 4px rgba(0,0,0,0.1)",
                       }}
                     >
                       <div
@@ -417,44 +696,111 @@ export default function HomePageClient() {
                           height: "100%",
                           width: `${result.scoreB || 80}%`,
                           background: "linear-gradient(90deg, #2196F3 0%, #1976D2 100%)",
-                          transition: "width 1s ease-out",
+                          transition: "width 1.5s cubic-bezier(0.4, 0, 0.2, 1)",
+                          boxShadow: "0 2px 8px rgba(33, 150, 243, 0.4)",
                         }}
                       />
                     </div>
-                    <p style={{ fontWeight: 600, fontSize: "1.1rem" }}>{result.productB}</p>
+                    <p style={{ fontWeight: 700, fontSize: "1.2rem", color: "#333" }}>{result.productB}</p>
                   </div>
                 </div>
 
-                <p style={{ fontSize: "1.1rem", lineHeight: 1.8, color: "var(--text-secondary)", textAlign: "center" }}>
+                <div
+                  style={{
+                    padding: "2rem",
+                    background: "linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%)",
+                    borderRadius: "12px",
+                    border: "2px solid #ffc107",
+                    marginTop: "1.5rem",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontSize: "1.15rem",
+                      lineHeight: 1.9,
+                      color: "#333",
+                      textAlign: "center",
+                      fontWeight: 500,
+                      margin: 0,
+                    }}
+                  >
                   {result.summary}
                 </p>
+                </div>
               </div>
 
               <div
                 style={{
-                  padding: "2rem",
-                  background: "var(--bg-primary)",
-                  border: "2px solid var(--border)",
+                  padding: "2.5rem",
+                  background: "linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%)",
+                  border: "2px solid #e9ecef",
                   marginBottom: "2rem",
-                  borderRadius: "12px",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  borderRadius: "16px",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.08)",
                 }}
               >
-                <h3 style={{ fontSize: "1.5rem", marginBottom: "1.5rem", textAlign: "center", fontWeight: 700 }}>
-                  Quick Comparison
+                <h3
+                  style={{
+                    fontSize: "1.75rem",
+                    marginBottom: "2rem",
+                    textAlign: "center",
+                    fontWeight: 800,
+                    background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  ⚡ Quick Comparison
                 </h3>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
-                  <div style={{ textAlign: "center", padding: "1rem", background: "#f0f9ff", borderRadius: "8px" }}>
-                    <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>💪</div>
-                    <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>Best For</div>
-                    <div style={{ fontSize: "0.9rem", opacity: 0.8 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1.5rem" }}>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "1.5rem",
+                      background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                      borderRadius: "12px",
+                      border: "2px solid #4CAF50",
+                      boxShadow: "0 4px 12px rgba(76, 175, 80, 0.15)",
+                      transition: "transform 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)"
+                    }}
+                  >
+                    <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>💪</div>
+                    <div style={{ fontWeight: 700, marginBottom: "0.5rem", fontSize: "1.1rem", color: "#4CAF50" }}>
+                      Best For
+                    </div>
+                    <div style={{ fontSize: "1rem", fontWeight: 500, color: "#333", lineHeight: 1.6 }}>
                       {result.strengthsA?.[0] || "Premium features"}
                     </div>
                   </div>
-                  <div style={{ textAlign: "center", padding: "1rem", background: "#f0f9ff", borderRadius: "8px" }}>
-                    <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>💪</div>
-                    <div style={{ fontWeight: 600, marginBottom: "0.25rem" }}>Best For</div>
-                    <div style={{ fontSize: "0.9rem", opacity: 0.8 }}>
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "1.5rem",
+                      background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+                      borderRadius: "12px",
+                      border: "2px solid #2196F3",
+                      boxShadow: "0 4px 12px rgba(33, 150, 243, 0.15)",
+                      transition: "transform 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.transform = "translateY(-4px)"
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.transform = "translateY(0)"
+                    }}
+                  >
+                    <div style={{ fontSize: "2.5rem", marginBottom: "0.75rem" }}>💪</div>
+                    <div style={{ fontWeight: 700, marginBottom: "0.5rem", fontSize: "1.1rem", color: "#2196F3" }}>
+                      Best For
+                    </div>
+                    <div style={{ fontSize: "1rem", fontWeight: 500, color: "#333", lineHeight: 1.6 }}>
                       {result.strengthsB?.[0] || "Value for money"}
                     </div>
                   </div>
@@ -471,15 +817,23 @@ export default function HomePageClient() {
               >
                 <div
                   style={{
-                    padding: "2rem",
-                    border: "3px solid #4CAF50",
-                    background: "var(--bg-primary)",
-                    borderRadius: "16px",
-                    boxShadow: "0 8px 24px rgba(76, 175, 80, 0.15)",
+                    padding: "2.5rem",
+                    border: "4px solid #4CAF50",
+                    background: "linear-gradient(135deg, #ffffff 0%, #f1f8f4 100%)",
+                    borderRadius: "20px",
+                    boxShadow: "0 12px 32px rgba(76, 175, 80, 0.25)",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     animation: "slideUp 0.6s ease-out",
                   }}
                   className="product-card"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-8px) scale(1.02)"
+                    e.currentTarget.style.boxShadow = "0 16px 48px rgba(76, 175, 80, 0.35)"
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0) scale(1)"
+                    e.currentTarget.style.boxShadow = "0 12px 32px rgba(76, 175, 80, 0.25)"
+                  }}
                 >
                   <div
                     style={{
@@ -576,15 +930,23 @@ export default function HomePageClient() {
 
                 <div
                   style={{
-                    padding: "2rem",
-                    border: "3px solid #2196F3",
-                    background: "var(--bg-primary)",
-                    borderRadius: "16px",
-                    boxShadow: "0 8px 24px rgba(33, 150, 243, 0.15)",
+                    padding: "2.5rem",
+                    border: "4px solid #2196F3",
+                    background: "linear-gradient(135deg, #ffffff 0%, #f0f7ff 100%)",
+                    borderRadius: "20px",
+                    boxShadow: "0 12px 32px rgba(33, 150, 243, 0.25)",
                     transition: "transform 0.3s ease, box-shadow 0.3s ease",
                     animation: "slideUp 0.6s ease-out 0.1s backwards",
                   }}
                   className="product-card"
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-8px) scale(1.02)"
+                    e.currentTarget.style.boxShadow = "0 16px 48px rgba(33, 150, 243, 0.35)"
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0) scale(1)"
+                    e.currentTarget.style.boxShadow = "0 12px 32px rgba(33, 150, 243, 0.25)"
+                  }}
                 >
                   <div
                     style={{
@@ -682,21 +1044,47 @@ export default function HomePageClient() {
 
               <div
                 style={{
-                  padding: "2.5rem",
-                  background: "linear-gradient(135deg, #000 0%, #2c2c2c 100%)",
+                  padding: "3rem",
+                  background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   color: "#fff",
-                  border: "3px solid #000",
-                  borderRadius: "16px",
-                  boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+                  border: "3px solid #764ba2",
+                  borderRadius: "20px",
+                  boxShadow: "0 16px 48px rgba(102, 126, 234, 0.4)",
                   marginBottom: "2rem",
                   animation: "slideUp 0.6s ease-out 0.2s backwards",
+                  position: "relative",
+                  overflow: "hidden",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
-                  <span style={{ fontSize: "2rem" }}>🎯</span>
-                  <h3 style={{ fontSize: "1.8rem", fontWeight: 700, color: "#fff" }}>Our Recommendation</h3>
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "-50px",
+                    right: "-50px",
+                    width: "200px",
+                    height: "200px",
+                    background: "rgba(255,255,255,0.1)",
+                    borderRadius: "50%",
+                    filter: "blur(40px)",
+                  }}
+                />
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1.5rem", position: "relative", zIndex: 1 }}>
+                  <span style={{ fontSize: "2.5rem", filter: "drop-shadow(0 2px 8px rgba(0,0,0,0.2))" }}>🎯</span>
+                  <h3 style={{ fontSize: "2rem", fontWeight: 800, color: "#fff", textShadow: "0 2px 8px rgba(0,0,0,0.2)" }}>
+                    Our Recommendation
+                  </h3>
                 </div>
-                <p style={{ fontSize: "1.15rem", lineHeight: 1.8, color: "#fff", opacity: 0.95 }}>
+                <p
+                  style={{
+                    fontSize: "1.2rem",
+                    lineHeight: 1.9,
+                    color: "#fff",
+                    opacity: 0.98,
+                    position: "relative",
+                    zIndex: 1,
+                    fontWeight: 500,
+                  }}
+                >
                   {result.recommendation}
                 </p>
               </div>

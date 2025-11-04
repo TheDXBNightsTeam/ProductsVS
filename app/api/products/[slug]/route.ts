@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server"
 
+// Cache individual product for 5 minutes (300 seconds)
+export const revalidate = 300
+
 export async function GET(request: Request, { params }: { params: { slug: string } }) {
   try {
     const { slug } = params
 
-    // TODO: Replace with actual database query
-    // For now, return mock data
+    // Note: This endpoint returns mock data
+    // To implement: Query the comparisons table from Supabase by slug
+    // Example: SELECT * FROM comparisons WHERE slug = $1 AND is_published = true
     const mockProducts: Record<string, any> = {
       "netflix-vs-disney": {
         id: "1",

@@ -6,6 +6,7 @@ import type React from "react"
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { Search } from "lucide-react"
+import { ThemeToggleSimple } from "@/components/ThemeToggleSimple"
 import { useKeyboardNavigation } from "@/lib/hooks/use-keyboard-navigation"
 
 interface NavigationProps {
@@ -184,6 +185,11 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           >
             Contact
           </Link>
+
+          {/* Theme Toggle */}
+          <div style={{ marginLeft: "0.5rem", display: "flex", alignItems: "center" }}>
+            <ThemeToggleSimple />
+          </div>
 
           <div className="language-switcher">
             <Link

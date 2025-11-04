@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Products VS" }],
   creator: "Products VS",
   publisher: "Products VS",
-  metadataBase: new URL("https://www.productsvs.com"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "https://www.productsvs.com"),
   alternates: {
     canonical: "/",
     languages: {
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
     title: "Products VS - Compare Everything | Smart Comparisons",
     description:
       "Compare products, services, and lifestyle choices. 70+ detailed comparisons in English and Arabic. Make informed decisions!",
-    url: "https://www.productsvs.com",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.productsvs.com",
     siteName: "Products VS",
     images: [
       {
@@ -72,10 +72,12 @@ export const metadata: Metadata = {
     generator: 'v0.app'
 }
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.productsvs.com"
+
 const organizationSchema = generateOrganizationSchema({
   name: "Products VS",
-  url: "https://www.productsvs.com",
-  logo: "https://www.productsvs.com/images/logo.png",
+  url: siteUrl,
+  logo: `${siteUrl}/images/logo.png`,
   description:
     "Professional comparison platform providing detailed product and service comparisons in English and Arabic to help users make informed decisions.",
   email: "info@productsvs.com",
@@ -94,13 +96,13 @@ const organizationSchema = generateOrganizationSchema({
 })
 
 const websiteSchema = generateWebsiteSchema({
-  url: "https://www.productsvs.com",
+  url: siteUrl,
   name: "Products VS",
   description: "Compare products, services, and lifestyle choices with detailed analysis in English and Arabic.",
   inLanguage: ["en", "ar"],
   potentialAction: {
     type: "SearchAction",
-    target: "https://www.productsvs.com/search?q={search_term_string}",
+    target: `${siteUrl}/search?q={search_term_string}`,
     queryInput: "required name=search_term_string",
   },
 })

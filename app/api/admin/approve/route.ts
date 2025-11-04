@@ -18,6 +18,7 @@ export async function POST(request: NextRequest) {
 
     const approvedComparison = await approveComparison(comparisonId, admin.adminId)
 
+    // Log admin actions for audit trail (always log for security)
     console.log(`[v0] Admin ${admin.email} approved comparison ${comparisonId}`)
 
     return NextResponse.json({

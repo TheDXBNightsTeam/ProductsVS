@@ -5,7 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://productsvs.com"
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://www.productsvs.com"
 
   // Static pages with high priority
   const staticPages: MetadataRoute.Sitemap = [
@@ -79,22 +79,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }))
 
-  // Dynamic comparisons from database (published only)
+  // Dynamic comparisons from database (approved only - pending excluded for SEO)
   let dynamicComparisons: MetadataRoute.Sitemap = []
   try {
     const supabase = await createClient()
     const { data, error } = await supabase
-      .from("comparisons")
-      .select("slug, updated_at")
-      .eq("is_published", true)
+      .from("comparisons_dynamic")
+      .select("product_a, product_b, updated_at")
+      .eq("status", "approved")
+      .order("updated_at", { ascending: false })
 
     if (!error && data) {
-      dynamicComparisons = data.map((comparison) => ({
-        url: `${baseUrl}/comparison/${comparison.slug}`,
-        lastModified: new Date(comparison.updated_at),
-        changeFrequency: "weekly" as const,
-        priority: 0.7,
-      }))
+      // Generate slugs from product names and create sitemap entries
+      dynamicComparisons = data.map((comparison) => {
+        const slug = `${comparison.product_a.toLowerCase().replace(/\s+/g, "-")}-vs-${comparison.product_b.toLowerCase().replace(/\s+/g, "-")}`
+        return {
+          url: `${baseUrl}/comparison/${slug}`,
+          lastModified: new Date(comparison.updated_at),
+          changeFrequency: "weekly" as const,
+          priority: 0.7,
+        }
+      })
     }
   } catch (error) {
     console.error("Error fetching dynamic comparisons for sitemap:", error)

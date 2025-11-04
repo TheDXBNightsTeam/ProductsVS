@@ -27,6 +27,7 @@ export async function POST(request: NextRequest) {
 
     const rejectedComparison = await rejectComparison(comparisonId, admin.adminId, reason)
 
+    // Log admin actions for audit trail (always log for security)
     console.log(`[v0] Admin ${admin.email} rejected comparison ${comparisonId} - Reason: ${reason}`)
 
     return NextResponse.json({

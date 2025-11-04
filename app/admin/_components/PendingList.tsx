@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Clock, ArrowUpDown } from "lucide-react"
+import { Clock, ArrowUpDown, RefreshCw, Sparkles } from "lucide-react"
 import ComparisonCard from "./ComparisonCard"
 import PreviewModal from "./PreviewModal"
 import RejectModal from "./RejectModal"
@@ -41,7 +41,9 @@ export default function PendingList({ onUpdate }: PendingListProps) {
         setComparisons(data.comparisons)
       }
     } catch (error) {
-      console.error("[v0] Failed to load pending comparisons:", error)
+      if (process.env.NODE_ENV === "development") {
+        console.error("[v0] Failed to load pending comparisons:", error)
+      }
     } finally {
       setLoading(false)
     }
@@ -52,7 +54,7 @@ export default function PendingList({ onUpdate }: PendingListProps) {
       const response = await fetch("/api/admin/approve", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ comparisonId: id }),
       })
       const data = await response.json()
       if (data.success) {
@@ -60,7 +62,9 @@ export default function PendingList({ onUpdate }: PendingListProps) {
         onUpdate()
       }
     } catch (error) {
-      console.error("[v0] Failed to approve:", error)
+      if (process.env.NODE_ENV === "development") {
+        console.error("[v0] Failed to approve:", error)
+      }
     }
   }
 
@@ -69,7 +73,7 @@ export default function PendingList({ onUpdate }: PendingListProps) {
       const response = await fetch("/api/admin/reject", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id, reason }),
+        body: JSON.stringify({ comparisonId: id, reason }),
       })
       const data = await response.json()
       if (data.success) {
@@ -79,7 +83,9 @@ export default function PendingList({ onUpdate }: PendingListProps) {
         onUpdate()
       }
     } catch (error) {
-      console.error("[v0] Failed to reject:", error)
+      if (process.env.NODE_ENV === "development") {
+        console.error("[v0] Failed to reject:", error)
+      }
     }
   }
 
@@ -94,35 +100,58 @@ export default function PendingList({ onUpdate }: PendingListProps) {
   }
 
   return (
-    <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-white flex items-center gap-3">
-          <Clock className="w-6 h-6 text-yellow-500" />
-          Pending Review
-          {comparisons.length > 0 && (
-            <span className="bg-yellow-500/20 text-yellow-500 text-sm font-semibold px-3 py-1 rounded-full border border-yellow-500/30">
-              {comparisons.length}
-            </span>
-          )}
-        </h2>
-        <button
-          onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
-          className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-gray-300 border border-gray-700 rounded-lg hover:bg-gray-700 transition-all duration-200"
-        >
-          <ArrowUpDown className="w-4 h-4" />
-          <span className="text-sm">{sortBy === "newest" ? "Newest First" : "Oldest First"}</span>
-        </button>
+    <div className="bg-gradient-to-br from-slate-800/50 to-slate-900/50 backdrop-blur-sm border border-white/10 rounded-2xl p-6 shadow-xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center shadow-lg shadow-yellow-500/25">
+            <Clock className="w-6 h-6 text-white" />
+          </div>
+          <div>
+            <h2 className="text-2xl font-extrabold text-white flex items-center gap-3">
+              Pending Review
+              {comparisons.length > 0 && (
+                <span className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 text-yellow-400 text-sm font-semibold px-3 py-1 rounded-full border border-yellow-500/30 backdrop-blur-sm">
+                  {comparisons.length}
+                </span>
+              )}
+            </h2>
+            <p className="text-sm text-gray-400">Review and moderate AI-generated comparisons</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={loadPending}
+            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white rounded-xl transition-all duration-200 backdrop-blur-sm"
+            title="Refresh"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setSortBy(sortBy === "newest" ? "oldest" : "newest")}
+            className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white rounded-xl transition-all duration-200 backdrop-blur-sm"
+          >
+            <ArrowUpDown className="w-4 h-4" />
+            <span className="text-sm font-medium">{sortBy === "newest" ? "Newest First" : "Oldest First"}</span>
+          </button>
+        </div>
       </div>
 
+      {/* Content */}
       {loading ? (
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-gray-700 border-t-white"></div>
+        <div className="text-center py-16">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-blue-600 rounded-2xl mb-4 shadow-lg shadow-purple-500/25">
+            <RefreshCw className="w-8 h-8 text-white animate-spin" />
+          </div>
+          <p className="text-gray-400 font-medium">Loading comparisons...</p>
         </div>
       ) : comparisons.length === 0 ? (
-        <div className="text-center py-12">
-          <Clock className="w-16 h-16 text-gray-700 mx-auto mb-4" />
-          <p className="text-lg text-gray-400 font-medium">No pending comparisons</p>
-          <p className="text-sm text-gray-500 mt-2">All caught up!</p>
+        <div className="text-center py-16">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl mb-4 border border-green-500/20">
+            <Sparkles className="w-10 h-10 text-green-400" />
+          </div>
+          <p className="text-lg text-gray-300 font-semibold mb-2">All caught up!</p>
+          <p className="text-sm text-gray-500">No pending comparisons to review</p>
         </div>
       ) : (
         <div className="space-y-4">
@@ -139,6 +168,7 @@ export default function PendingList({ onUpdate }: PendingListProps) {
         </div>
       )}
 
+      {/* Modals */}
       {showPreview && selectedComparison && (
         <PreviewModal
           comparison={selectedComparison}

@@ -11,9 +11,19 @@ interface PendingBannerProps {
   submittedAt?: string
   email?: string
   onEmailSubmit?: (email: string) => void
+  comparisonSlug?: string | null
+  comparisonUrl?: string
 }
 
-export default function PendingBanner({ product1, product2, submittedAt, email, onEmailSubmit }: PendingBannerProps) {
+export default function PendingBanner({
+  product1,
+  product2,
+  submittedAt,
+  email,
+  onEmailSubmit,
+  comparisonSlug,
+  comparisonUrl,
+}: PendingBannerProps) {
   const [notifyEmail, setNotifyEmail] = useState(email || "")
   const [emailSubmitted, setEmailSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -203,6 +213,53 @@ export default function PendingBanner({ product1, product2, submittedAt, email, 
         >
           <span style={{ fontSize: "1.2rem", marginRight: "0.5rem" }}>✅</span>
           <strong style={{ color: "#155724" }}>Email notification set! We'll notify you when it's approved.</strong>
+        </div>
+      )}
+
+      {/* View Comparison Link */}
+      {comparisonSlug && comparisonUrl && (
+        <div
+          style={{
+            background: "#fff",
+            padding: "1.5rem",
+            borderRadius: "12px",
+            marginBottom: "1.5rem",
+            border: "2px solid #1976d2",
+            textAlign: "center",
+          }}
+        >
+          <div style={{ marginBottom: "1rem" }}>
+            <span style={{ fontSize: "1.2rem", marginRight: "0.5rem" }}>🔗</span>
+            <strong style={{ color: "#1976d2" }}>Preview Your Comparison:</strong>
+          </div>
+          <Link
+            href={comparisonUrl}
+            style={{
+              display: "inline-block",
+              padding: "0.75rem 1.5rem",
+              background: "#1976d2",
+              color: "#fff",
+              border: "none",
+              borderRadius: "8px",
+              textDecoration: "none",
+              fontWeight: 600,
+              fontSize: "1rem",
+              transition: "all 0.2s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = "#1565c0"
+              e.currentTarget.style.transform = "translateY(-2px)"
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = "#1976d2"
+              e.currentTarget.style.transform = "translateY(0)"
+            }}
+          >
+            View Comparison Page →
+          </Link>
+          <p style={{ fontSize: "0.9rem", color: "#666", marginTop: "0.75rem", marginBottom: 0 }}>
+            You can view your comparison now, but it will be marked as "Under Review" until approved.
+          </p>
         </div>
       )}
 

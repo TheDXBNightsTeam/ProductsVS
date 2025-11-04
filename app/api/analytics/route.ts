@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server"
 
-export const dynamic = 'force-dynamic'
+// Cache analytics for 2 minutes (120 seconds)
+export const revalidate = 120
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const period = searchParams.get("period") || "week"
 
-    // TODO: Replace with actual analytics data from database
-    // For now, return mock data
+    // Note: This endpoint returns mock data
+    // To implement: Aggregate analytics data from database tables (views, votes, ratings)
+    // Calculate metrics: total views, active users, top comparisons, views by category
     const mockAnalytics = {
       period,
       totalViews: 1234567,

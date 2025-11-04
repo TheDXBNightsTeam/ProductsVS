@@ -2,7 +2,21 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 import { jwtVerify } from "jose"
 
-const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || "your-secret-key-change-in-production")
+// Validate JWT_SECRET in production
+if (process.env.NODE_ENV === "production" && (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32)) {
+  throw new Error(
+    "JWT_SECRET environment variable is required in production and must be at least 32 characters long"
+  )
+}
+
+const JWT_SECRET = new TextEncoder().encode(
+  process.env.JWT_SECRET || (process.env.NODE_ENV === "development" ? "dev-secret-key-min-32-chars-for-local" : "")
+)
+
+if (!JWT_SECRET.length) {
+  throw new Error("JWT_SECRET is required")
+}
+
 const TOKEN_NAME = "admin_token"
 
 async function verifyAdminToken(request: NextRequest): Promise<boolean> {
