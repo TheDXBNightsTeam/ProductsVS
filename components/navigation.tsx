@@ -363,6 +363,10 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
         }
 
         @media (max-width: 968px) {
+          .nav-container {
+            padding: 1rem;
+          }
+
           .search-form {
             display: none;
           }
@@ -370,7 +374,11 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           .mobile-search-form {
             display: block;
             width: 100%;
-            margin-bottom: var(--spacing-md);
+            margin-bottom: 1rem;
+          }
+
+          .nav-logo {
+            font-size: 1.25rem;
           }
 
           .nav-toggle {
@@ -387,10 +395,12 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
             border-bottom: 1px solid var(--border);
             flex-direction: column;
             align-items: stretch;
-            padding: var(--spacing-lg);
+            padding: 1.5rem 1rem;
             gap: 0;
             z-index: 1000;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            max-height: calc(100vh - 60px);
+            overflow-y: auto;
           }
 
           .nav-links.active {
@@ -398,17 +408,27 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           }
 
           .nav-link {
-            padding: var(--spacing-md) 0;
+            padding: 1rem 0;
             border-bottom: 1px solid var(--border);
-            text-align: center;
+            text-align: left;
+            font-size: 0.95rem;
           }
 
-          .nav-link:last-child {
-            border-bottom: none;
+          .nav-link:last-of-type {
+            border-bottom: 1px solid var(--border);
           }
 
           .language-switcher {
-            margin-top: var(--spacing-md);
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--border);
+            text-align: center;
+          }
+
+          .lang-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
             text-align: center;
           }
         }
