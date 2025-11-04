@@ -190,6 +190,7 @@ export default function HomePageClient() {
           </h2>
           <form ref={formRef} onSubmit={handleCompare} aria-label="Product comparison form">
             <div
+              className="compare-form-grid"
               style={{
                 display: "grid",
                 gridTemplateColumns: "1fr auto 1fr",
@@ -1264,20 +1265,31 @@ export default function HomePageClient() {
         }
 
         @media (max-width: 768px) {
-          form > div:first-child {
-            grid-template-columns: 1fr !important;
+          .compare-form-grid {
+            display: flex !important;
+            flex-direction: column !important;
             gap: 1rem !important;
           }
 
           .swap-button {
-            margin-top: 0 !important;
-            margin-bottom: 0 !important;
+            margin-top: 0.5rem !important;
+            margin-bottom: 0.5rem !important;
             padding: 0.5rem !important;
-            font-size: 1rem !important;
-            min-width: 40px !important;
-            min-height: 40px !important;
-            align-self: center;
-            transform: rotate(90deg);
+            font-size: 1.2rem !important;
+            width: 48px !important;
+            height: 48px !important;
+            min-width: 48px !important;
+            min-height: 48px !important;
+            align-self: center !important;
+            transform: rotate(90deg) !important;
+          }
+
+          .hero-section h1 {
+            font-size: 2.5rem !important;
+          }
+
+          .hero-subtitle {
+            font-size: 1.2rem !important;
           }
         }
       `}</style>
