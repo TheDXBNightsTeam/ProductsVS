@@ -197,7 +197,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           <div className="mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-[var(--border)]">
             <Link
               href={locale === "en" ? "/ar" : "/en"}
-              className="block w-full md:w-auto rounded bg-[var(--text)] px-4 py-2 text-center text-sm font-medium uppercase tracking-wider text-[var(--bg)] transition-colors hover:bg-[var(--bg)] hover:text-[var(--text)] border border-[var(--text)]"
+              className="block w-full md:w-auto rounded-md px-4 py-2 text-center text-sm font-medium uppercase tracking-wider transition-all border-2 bg-transparent border-[var(--border)] text-[var(--text)] hover:border-[var(--text)] hover:bg-[var(--surface)]"
               onClick={closeMenu}
               aria-label={`Switch to ${locale === "en" ? "Arabic" : "English"}`}
             >
