@@ -1,8 +1,25 @@
+
 "use client"
 
 import { useState, useEffect } from "react"
 import { CheckCircle, XCircle, Eye, Calendar, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
+import { Button } from "@/components/ui/button"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 interface Comparison {
   id: string
@@ -95,69 +112,69 @@ export default function PendingList({ onRefresh }: PendingListProps) {
   }
 
   return (
-    <>
+    <div>
       {/* Confirmation Dialog */}
-      {confirmDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-lg max-w-md w-full p-6 shadow-2xl">
-            <div className="flex items-start gap-4 mb-4">
+      <Dialog open={!!confirmDialog} onOpenChange={(open) => !open && setConfirmDialog(null)}>
+        <DialogContent className="bg-[var(--surface)] border-2 border-[var(--border)] max-w-md">
+          <DialogHeader>
+            <div className="flex items-start gap-4">
               <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                confirmDialog.action === "approve" ? "bg-green-500" : "bg-red-500"
+                confirmDialog?.action === "approve" ? "bg-green-500" : "bg-red-500"
               }`}>
                 <AlertCircle className="w-6 h-6 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="text-lg font-bold text-[var(--text)] mb-2">
-                  {confirmDialog.action === "approve" ? "Approve Comparison?" : "Reject Comparison?"}
-                </h3>
-                <p className="text-sm text-[var(--text-secondary)] mb-3">
-                  Are you sure you want to {confirmDialog.action} the comparison between{" "}
-                  <span className="font-semibold text-[var(--text)]">{confirmDialog.product1}</span> and{" "}
-                  <span className="font-semibold text-[var(--text)]">{confirmDialog.product2}</span>?
-                </p>
-                
-                {confirmDialog.action === "reject" && (
-                  <div>
-                    <label htmlFor="reject-reason" className="block text-sm font-semibold text-[var(--text)] mb-2">
-                      Reason for rejection:
-                    </label>
-                    <select
-                      id="reject-reason"
-                      value={rejectReason}
-                      onChange={(e) => setRejectReason(e.target.value)}
-                      className="w-full px-3 py-2 border-2 border-[var(--border)] bg-[var(--bg)] text-[var(--text)] rounded-lg focus:border-[var(--text)] focus:outline-none"
-                    >
-                      <option value="Low quality">Low quality</option>
-                      <option value="Inappropriate content">Inappropriate content</option>
-                      <option value="Spam">Spam</option>
-                      <option value="Duplicate">Duplicate</option>
-                      <option value="Other">Other</option>
-                    </select>
-                  </div>
-                )}
+                <DialogTitle className="text-lg font-bold text-[var(--text)] mb-2">
+                  {confirmDialog?.action === "approve" ? "Approve Comparison?" : "Reject Comparison?"}
+                </DialogTitle>
+                <DialogDescription className="text-sm text-[var(--text-secondary)]">
+                  Are you sure you want to {confirmDialog?.action} the comparison between{" "}
+                  <span className="font-semibold text-[var(--text)]">{confirmDialog?.product1}</span> and{" "}
+                  <span className="font-semibold text-[var(--text)]">{confirmDialog?.product2}</span>?
+                </DialogDescription>
               </div>
             </div>
-            <div className="flex gap-3 justify-end mt-4">
-              <button
-                onClick={() => setConfirmDialog(null)}
-                className="px-4 py-2 border-2 border-[var(--border)] text-[var(--text)] rounded-lg hover:bg-[var(--surface-alt)] transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={() => handleAction(confirmDialog.id, confirmDialog.action)}
-                className={`px-4 py-2 rounded-lg text-white font-semibold transition-colors ${
-                  confirmDialog.action === "approve" 
-                    ? "bg-green-500 hover:bg-green-600" 
-                    : "bg-red-500 hover:bg-red-600"
-                }`}
-              >
-                {confirmDialog.action === "approve" ? "Approve" : "Reject"}
-              </button>
+          </DialogHeader>
+          
+          {confirmDialog?.action === "reject" && (
+            <div className="mt-4">
+              <label htmlFor="reject-reason" className="block text-sm font-semibold text-[var(--text)] mb-2">
+                Reason for rejection:
+              </label>
+              <Select value={rejectReason} onValueChange={setRejectReason}>
+                <SelectTrigger className="w-full border-2 border-[var(--border)] bg-[var(--bg)]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Low quality">Low quality</SelectItem>
+                  <SelectItem value="Inappropriate content">Inappropriate content</SelectItem>
+                  <SelectItem value="Spam">Spam</SelectItem>
+                  <SelectItem value="Duplicate">Duplicate</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
-          </div>
-        </div>
-      )}
+          )}
+
+          <DialogFooter className="mt-4">
+            <Button
+              variant="outline"
+              onClick={() => setConfirmDialog(null)}
+              className="border-2 border-[var(--border)]"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => confirmDialog && handleAction(confirmDialog.id, confirmDialog.action)}
+              className={confirmDialog?.action === "approve" 
+                ? "bg-green-500 hover:bg-green-600" 
+                : "bg-red-500 hover:bg-red-600"}
+            >
+              {confirmDialog?.action === "approve" ? "Approve" : "Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <div className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-lg">
         <div className="p-6 border-b-2 border-[var(--border)]">
@@ -188,29 +205,32 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
-                  <button
+                  <Button
+                    variant="outline"
+                    size="icon"
                     onClick={() => window.open(`/comparison/${comp.slug}`, "_blank")}
-                    className="p-2 text-[var(--text-secondary)] hover:bg-[var(--surface-alt)] hover:text-[var(--text)] rounded-lg transition-colors border border-[var(--border)]"
+                    className="border border-[var(--border)]"
                     title="Preview"
                   >
                     <Eye className="w-5 h-5" />
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => showConfirmDialog(comp.id, "approve", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-2 font-medium"
+                    className="bg-green-500 hover:bg-green-600"
                   >
-                    <CheckCircle className="w-4 h-4" />
+                    <CheckCircle className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Approve</span>
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    variant="outline"
                     onClick={() => showConfirmDialog(comp.id, "reject", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="px-4 py-2 border-2 border-[var(--border)] text-[var(--text)] rounded-lg hover:bg-red-500 hover:text-white hover:border-red-500 transition-colors disabled:opacity-50 flex items-center gap-2 font-medium"
+                    className="border-2 border-[var(--border)] hover:bg-red-500 hover:text-white hover:border-red-500"
                   >
-                    <XCircle className="w-4 h-4" />
+                    <XCircle className="w-4 h-4 mr-2" />
                     <span className="hidden sm:inline">Reject</span>
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -218,6 +238,6 @@ export default function PendingList({ onRefresh }: PendingListProps) {
         )}
         </div>
       </div>
-    </>
+    </div>
   )
 }
