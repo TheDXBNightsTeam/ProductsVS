@@ -118,13 +118,13 @@ export default function PendingList({ onRefresh }: PendingListProps) {
     <div>
       {/* Confirmation Dialog */}
       <Dialog open={!!confirmDialog} onOpenChange={(open) => !open && setConfirmDialog(null)}>
-        <DialogContent className="bg-[var(--surface)] border-2 border-[var(--border)] max-w-md">
+        <DialogContent className="bg-[var(--surface)] border-2 border-[var(--border)] max-w-md shadow-2xl">
           <DialogHeader>
             <div className="flex items-start gap-4">
-              <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
+              <div className={`w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 ${
                 confirmDialog?.action === "approve" ? "bg-green-500" : "bg-red-500"
               }`}>
-                <AlertCircle className="w-6 h-6 text-white" />
+                <AlertCircle className="w-6 h-6 text-white animate-pulse" />
               </div>
               <div className="flex-1">
                 <DialogTitle className="text-lg font-bold text-[var(--text)] mb-2">
@@ -149,7 +149,7 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                 Reason for rejection:
               </label>
               <Select value={rejectReason} onValueChange={setRejectReason}>
-                <SelectTrigger className="w-full border-2 border-[var(--border)] bg-[var(--bg)]">
+                <SelectTrigger className="w-full border-2 border-[var(--border)] bg-[var(--bg)] hover:border-[var(--text)] transition-colors duration-200">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -163,19 +163,21 @@ export default function PendingList({ onRefresh }: PendingListProps) {
             </div>
           )}
 
-          <DialogFooter className="mt-4">
+          <DialogFooter className="mt-4 gap-2">
             <Button
               variant="outline"
               onClick={() => setConfirmDialog(null)}
-              className="border-2 border-[var(--border)]"
+              className="border-2 border-[var(--border)] hover:bg-[var(--bg)] transition-all duration-200 hover:scale-105"
             >
               Cancel
             </Button>
             <Button
               onClick={() => confirmDialog && handleAction(confirmDialog.id, confirmDialog.action)}
-              className={confirmDialog?.action === "approve" 
-                ? "bg-green-500 hover:bg-green-600" 
-                : "bg-red-500 hover:bg-red-600"}
+              className={`transition-all duration-200 hover:scale-105 hover:shadow-lg ${
+                confirmDialog?.action === "approve" 
+                  ? "bg-green-500 hover:bg-green-600" 
+                  : "bg-red-500 hover:bg-red-600"
+              }`}
             >
               {confirmDialog?.action === "approve" ? "Approve" : "Reject"}
             </Button>
@@ -193,15 +195,21 @@ export default function PendingList({ onRefresh }: PendingListProps) {
         {comparisons.length === 0 ? (
           <div className="p-8 text-center text-[var(--text-secondary)]">No pending comparisons</div>
         ) : (
-          comparisons.map((comp) => (
-            <div key={comp.id} className="p-6 hover:bg-[var(--bg)] transition-colors">
+          comparisons.map((comp, index) => (
+            <div 
+              key={comp.id} 
+              className="p-6 hover:bg-[var(--bg)] transition-all duration-300 group animate-fade-in-left"
+              style={{
+                animationDelay: `${index * 50}ms`,
+              }}
+            >
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div className="flex-1">
-                  <h3 className="font-semibold text-[var(--text)] mb-2 text-lg">
+                  <h3 className="font-semibold text-[var(--text)] mb-2 text-lg transition-colors duration-200 group-hover:text-[var(--text)]">
                     {comp.product1_name} <span className="text-[var(--text-secondary)]">vs</span> {comp.product2_name}
                   </h3>
                   <div className="flex items-center gap-4 text-sm text-[var(--text-secondary)]">
-                    <span className="px-3 py-1 bg-[var(--bg)] border border-[var(--border)] rounded-full text-xs font-medium">
+                    <span className="px-3 py-1 bg-[var(--bg)] border border-[var(--border)] rounded-full text-xs font-medium transition-all duration-200 group-hover:border-[var(--text)] group-hover:text-[var(--text)]">
                       {comp.category}
                     </span>
                     <span className="flex items-center gap-1">
@@ -216,7 +224,7 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                     variant="outline"
                     size="icon"
                     onClick={() => window.open(`/comparison/${comp.slug}`, "_blank")}
-                    className="border border-[var(--border)]"
+                    className="border border-[var(--border)] hover:border-[var(--text)] hover:bg-[var(--bg)] transition-all duration-200 hover:scale-105"
                     title="Preview"
                   >
                     <Eye className="w-5 h-5" />
@@ -224,7 +232,7 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                   <Button
                     onClick={() => showConfirmDialog(comp.id, "approve", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
+                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                   >
                     {actionLoading === comp.id ? (
                       <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -237,7 +245,7 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                     variant="outline"
                     onClick={() => showConfirmDialog(comp.id, "reject", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="border-2 border-[var(--border)] hover:bg-red-500 hover:text-white hover:border-red-500 disabled:opacity-50"
+                    className="border-2 border-[var(--border)] hover:bg-red-500 hover:text-white hover:border-red-500 disabled:opacity-50 transition-all duration-200 hover:scale-105 hover:shadow-lg"
                   >
                     {actionLoading === comp.id ? (
                       <div className="w-4 h-4 mr-2 border-2 border-[var(--text)] border-t-transparent rounded-full animate-spin" />
@@ -253,6 +261,22 @@ export default function PendingList({ onRefresh }: PendingListProps) {
         )}
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes fade-in-left {
+          from {
+            opacity: 0;
+            transform: translateX(-1rem);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        .animate-fade-in-left {
+          animation: fade-in-left 0.4s ease-out backwards;
+        }
+      `}</style>
     </div>
   )
 }

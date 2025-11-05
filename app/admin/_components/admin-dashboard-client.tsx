@@ -78,8 +78,11 @@ export default function AdminDashboardClient() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-[var(--text)] animate-spin mx-auto mb-4" />
-          <p className="text-[var(--text-secondary)]">Loading dashboard...</p>
+          <div className="relative">
+            <div className="w-16 h-16 border-4 border-[var(--border)] border-t-[var(--text)] rounded-full animate-spin mx-auto mb-4"></div>
+            <Loader2 className="w-8 h-8 text-[var(--text)] absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 -mt-2" />
+          </div>
+          <p className="text-[var(--text-secondary)] animate-pulse">Loading dashboard...</p>
         </div>
       </div>
     )
@@ -91,9 +94,13 @@ export default function AdminDashboardClient() {
       <Navbar admin={admin} onLogout={handleLogout} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Dashboard</h1>
-          <p className="text-[var(--text-secondary)]">Welcome back, {admin?.name}</p>
+        <div className="mb-8 animate-fade-in">
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2 transition-all duration-300 hover:scale-105 inline-block">
+            Dashboard
+          </h1>
+          <p className="text-[var(--text-secondary)] transition-colors duration-200 hover:text-[var(--text)]">
+            Welcome back, <span className="font-semibold">{admin?.name}</span>
+          </p>
         </div>
 
         <div className="space-y-6">
@@ -101,6 +108,22 @@ export default function AdminDashboardClient() {
           <PendingList onRefresh={loadStats} />
         </div>
       </main>
+
+      <style jsx>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.6s ease-out;
+        }
+      `}</style>
     </div>
   )
 }

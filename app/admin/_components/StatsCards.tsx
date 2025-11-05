@@ -47,16 +47,19 @@ export default function StatsCards({ stats }: StatsCardsProps) {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card) => {
+      {cards.map((card, index) => {
         const Icon = card.icon
         return (
           <div
             key={card.title}
-            className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-lg p-6 hover:border-[var(--text)] transition-all hover:shadow-lg"
+            className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-lg p-6 hover:border-[var(--text)] transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group animate-fade-in-stagger"
+            style={{
+              animationDelay: `${index * 100}ms`,
+            }}
           >
             <div className="flex items-start justify-between mb-4">
-              <div className={`w-12 h-12 ${card.color} rounded-lg flex items-center justify-center shadow-md`}>
-                <Icon className="w-6 h-6 text-white" />
+              <div className={`w-12 h-12 ${card.color} rounded-lg flex items-center justify-center shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-3 group-hover:shadow-lg`}>
+                <Icon className="w-6 h-6 text-white transition-transform duration-300 group-hover:scale-110" />
               </div>
             </div>
             {isLoading ? (
@@ -66,13 +69,32 @@ export default function StatsCards({ stats }: StatsCardsProps) {
               </>
             ) : (
               <>
-                <p className="text-3xl font-bold text-[var(--text)] mb-1">{card.value}</p>
-                <p className="text-sm text-[var(--text-secondary)] font-medium">{card.title}</p>
+                <p className="text-3xl font-bold text-[var(--text)] mb-1 transition-all duration-300 group-hover:scale-105">
+                  {card.value}
+                </p>
+                <p className="text-sm text-[var(--text-secondary)] font-medium transition-colors duration-300 group-hover:text-[var(--text)]">
+                  {card.title}
+                </p>
               </>
             )}
           </div>
         )
       })}
+      <style jsx>{`
+        @keyframes fade-in-stagger {
+          from {
+            opacity: 0;
+            transform: translateY(1rem);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-stagger {
+          animation: fade-in-stagger 0.5s ease-out backwards;
+        }
+      `}</style>
     </div>
   )
 }
