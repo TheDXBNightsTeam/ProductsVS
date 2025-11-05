@@ -240,12 +240,12 @@ export default function HomePageClient() {
         onComplete={() => setShowSuccess(false)}
         message="Comparison Generated Successfully!"
       />
-      <section className="hero-section" style={{ padding: "80px 0", textAlign: "center" }}>
+      <section className="hero-section" style={{ padding: "60px 0 40px", textAlign: "center" }}>
         <div className="container">
-          <h1 style={{ fontSize: "3.5rem", fontWeight: 800, marginBottom: "1.5rem", lineHeight: 1.2 }}>
+          <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 800, marginBottom: "1.5rem", lineHeight: 1.2 }}>
             Compare <span style={{ color: "var(--primary-color, #000)" }}>Everything</span>
           </h1>
-          <p className="hero-subtitle" style={{ fontSize: "1.5rem", marginBottom: "2.5rem", opacity: 0.8 }}>
+          <p className="hero-subtitle" style={{ fontSize: "clamp(1.1rem, 3vw, 1.5rem)", marginBottom: "2.5rem", opacity: 0.8 }}>
             70+ Detailed Comparisons in English & Arabic
           </p>
           <p
@@ -264,21 +264,14 @@ export default function HomePageClient() {
         </div>
       </section>
 
-      <section style={{ padding: "60px 0" }}>
+      <section style={{ padding: "40px 0 60px" }}>
         <div className="container" style={{ maxWidth: "900px" }}>
-          <h2 style={{ fontSize: "2.5rem", textAlign: "center", marginBottom: "2rem", fontWeight: 700 }}>
+          <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.5rem)", textAlign: "center", marginBottom: "2rem", fontWeight: 700 }}>
             🤖 AI Battle - Compare Anything
           </h2>
           <form ref={formRef} onSubmit={handleCompare} aria-label="Product comparison form">
             <div
-              className="compare-form-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr auto 1fr",
-                gap: "2rem",
-                alignItems: "center",
-                marginBottom: "2rem",
-              }}
+              className="compare-form-grid grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-4 md:gap-8 items-center mb-8"
             >
               <div>
                 <label

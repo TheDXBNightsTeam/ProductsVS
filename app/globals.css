@@ -312,11 +312,33 @@ a:hover {
     --font-3xl: 1.5rem;
     --spacing-3xl: 3rem;
   }
+  
+  .compare-form-grid {
+    gap: 1rem !important;
+  }
+  
+  input[type="text"],
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
 }
 
 @media (max-width: 480px) {
   .container {
     padding: 0 0.75rem;
+  }
+  
+  h1 {
+    font-size: 2rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  .hero-section {
+    padding: 40px 0 30px !important;
   }
 }
 
@@ -336,12 +358,21 @@ a:hover {
   font-size: var(--font-base);
   text-transform: uppercase;
   letter-spacing: 0.05em;
+  min-height: 44px;
+  justify-content: center;
 }
 
 .cta-button:hover {
   background: var(--bg);
   color: var(--text);
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .cta-button {
+    width: 100%;
+    padding: 1rem 1.5rem;
+  }
 }
 
 /* ===== Cards ===== */
@@ -359,6 +390,18 @@ a:hover {
   transform: translateY(-5px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   border-color: var(--text);
+}
+
+@media (max-width: 768px) {
+  .comparison-card,
+  .category-card {
+    padding: 1.5rem;
+  }
+  
+  .comparison-card:hover,
+  .category-card:hover {
+    transform: translateY(-2px);
+  }
 }
 
 /* ===== Images ===== */
