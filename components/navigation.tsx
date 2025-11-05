@@ -78,52 +78,56 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
   const isActive = (path: string) => currentPath === path
 
   return (
-    <nav className="navbar" aria-label="Main navigation">
-      <div className="nav-container">
-        <Link href="/" className="nav-logo" aria-label="Products VS Home">
-          Products<span>VS</span>
+    <nav className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--bg)]/95 backdrop-blur-sm" aria-label="Main navigation">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-6 px-6 py-4">
+        <Link href="/" className="flex-shrink-0 text-2xl font-semibold tracking-tight text-[var(--text)] transition-opacity hover:opacity-70" aria-label="Products VS Home">
+          Products <span className="font-normal">VS</span>
         </Link>
 
-        <form onSubmit={handleSearch} className="search-form" role="search" aria-label="Search products">
-          <div className="search-input-wrapper">
-            <Search className="search-icon" size={18} aria-hidden="true" />
+        <form onSubmit={handleSearch} className="hidden flex-1 max-w-xs md:block" role="search" aria-label="Search products">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none" size={18} aria-hidden="true" />
             <input
               type="text"
               placeholder="Search products... (Alt + /)"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="search-input"
+              className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 pl-10 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)] focus:border-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--text)]/10 search-input"
               aria-label="Search products"
             />
           </div>
         </form>
 
         <button
-          className="nav-toggle"
+          className="md:hidden p-2 -mr-2"
           aria-label={isMenuOpen ? "Close navigation menu" : "Open navigation menu"}
           aria-expanded={isMenuOpen}
           aria-controls="mobile-menu"
           onClick={toggleMenu}
         >
-          <span className="hamburger"></span>
+          <div className="relative w-6 h-5">
+            <span className={`absolute top-0 left-0 w-full h-0.5 bg-[var(--text)] transition-transform ${isMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+            <span className={`absolute top-1/2 left-0 w-full h-0.5 bg-[var(--text)] -translate-y-1/2 transition-opacity ${isMenuOpen ? 'opacity-0' : ''}`}></span>
+            <span className={`absolute bottom-0 left-0 w-full h-0.5 bg-[var(--text)] transition-transform ${isMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+          </div>
         </button>
 
         <div
           ref={mobileMenuRef}
           id="mobile-menu"
-          className={`nav-links ${isMenuOpen ? "active" : ""}`}
+          className={`${isMenuOpen ? 'flex' : 'hidden'} md:flex absolute md:relative top-full left-0 right-0 md:top-auto flex-col md:flex-row items-stretch md:items-center gap-0 md:gap-6 bg-[var(--bg)] md:bg-transparent border-b md:border-b-0 border-[var(--border)] p-6 md:p-0 shadow-lg md:shadow-none max-h-[calc(100vh-60px)] md:max-h-none overflow-y-auto md:overflow-visible`}
           role="navigation"
           aria-label="Mobile navigation menu"
         >
-          <form onSubmit={handleSearch} className="mobile-search-form" role="search">
-            <div className="search-input-wrapper">
-              <Search className="search-icon" size={18} aria-hidden="true" />
+          <form onSubmit={handleSearch} className="md:hidden mb-4" role="search">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] pointer-events-none" size={18} aria-hidden="true" />
               <input
                 type="text"
                 placeholder="Search products..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-input"
+                className="w-full rounded-md border border-[var(--border)] bg-[var(--bg)] px-3 py-2 pl-10 text-sm text-[var(--text)] placeholder:text-[var(--text-secondary)] focus:border-[var(--text)] focus:outline-none focus:ring-2 focus:ring-[var(--text)]/10 search-input"
                 aria-label="Search products"
               />
             </div>
@@ -131,7 +135,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
 
           <Link
             href="/"
-            className={`nav-link ${isActive("/") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/") ? "page" : undefined}
           >
@@ -139,7 +143,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/en"
-            className={`nav-link ${isActive("/en") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/en") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/en") ? "page" : undefined}
           >
@@ -147,7 +151,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/category/technology"
-            className={`nav-link ${currentPath.startsWith("/category") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${currentPath.startsWith("/category") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             title="Browse by category"
           >
@@ -155,7 +159,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/ai-battle"
-            className={`nav-link ${isActive("/ai-battle") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/ai-battle") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/ai-battle") ? "page" : undefined}
           >
@@ -163,7 +167,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/favorites"
-            className={`nav-link ${isActive("/favorites") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/favorites") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/favorites") ? "page" : undefined}
           >
@@ -171,7 +175,7 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/about"
-            className={`nav-link ${isActive("/about") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/about") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/about") ? "page" : undefined}
           >
@@ -179,22 +183,21 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </Link>
           <Link
             href="/contact"
-            className={`nav-link ${isActive("/contact") ? "active" : ""}`}
+            className={`py-3 md:py-0 border-b md:border-b-0 border-[var(--border)] text-sm font-medium uppercase tracking-wider transition-colors ${isActive("/contact") ? "text-[var(--text)]" : "text-[var(--text-secondary)] hover:text-[var(--text)]"}`}
             onClick={closeMenu}
             aria-current={isActive("/contact") ? "page" : undefined}
           >
             Contact
           </Link>
 
-          {/* Theme Toggle */}
-          <div style={{ marginLeft: "0.5rem", display: "flex", alignItems: "center" }}>
+          <div className="flex items-center py-3 md:py-0 border-b md:border-b-0 border-[var(--border)]">
             <ThemeToggleSimple />
           </div>
 
-          <div className="language-switcher">
+          <div className="mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-[var(--border)]">
             <Link
               href={locale === "en" ? "/ar" : "/en"}
-              className="lang-btn"
+              className="block w-full md:w-auto rounded bg-[var(--text)] px-4 py-2 text-center text-sm font-medium uppercase tracking-wider text-[var(--bg)] transition-colors hover:bg-[var(--bg)] hover:text-[var(--text)] border border-[var(--text)]"
               onClick={closeMenu}
               aria-label={`Switch to ${locale === "en" ? "Arabic" : "English"}`}
             >
@@ -203,245 +206,6 @@ export default function Navigation({ currentPath = "/", locale = "en" }: Navigat
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        .navbar {
-          background: var(--bg);
-          border-bottom: 1px solid var(--border);
-          position: sticky;
-          top: 0;
-          z-index: 1000;
-          backdrop-filter: blur(10px);
-          background: rgba(255, 255, 255, 0.95);
-        }
-
-        .nav-container {
-          max-width: 1200px;
-          margin: 0 auto;
-          padding: 1rem 1.5rem;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          gap: 1.5rem;
-        }
-
-        .nav-logo {
-          font-size: 1.5rem;
-          font-weight: 600;
-          color: var(--text);
-          text-decoration: none;
-          letter-spacing: -0.03em;
-          border: none;
-          transition: opacity var(--transition);
-          flex-shrink: 0;
-        }
-
-        .nav-logo:hover {
-          opacity: 0.7;
-        }
-
-        .nav-logo span {
-          font-weight: 400;
-        }
-
-        .search-form {
-          flex: 0 1 280px;
-        }
-
-        .mobile-search-form {
-          display: none;
-        }
-
-        .search-input-wrapper {
-          position: relative;
-          width: 100%;
-        }
-
-        .search-icon {
-          position: absolute;
-          left: 12px;
-          top: 50%;
-          transform: translateY(-50%);
-          color: var(--text-secondary);
-          pointer-events: none;
-        }
-
-        .search-input {
-          width: 100%;
-          padding: 0.5rem 0.75rem 0.5rem 36px;
-          border: 1px solid var(--border);
-          background: var(--bg);
-          color: var(--text);
-          font-size: 0.875rem;
-          transition: all var(--transition);
-          border-radius: 6px;
-        }
-
-        .search-input:focus {
-          outline: none;
-          border-color: var(--text);
-          box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
-        }
-
-        .search-input::placeholder {
-          color: var(--text-secondary);
-        }
-
-        .nav-links {
-          display: flex;
-          gap: 1.5rem;
-          align-items: center;
-          flex-wrap: wrap;
-        }
-
-        .nav-link {
-          color: var(--text-secondary);
-          text-decoration: none;
-          font-size: 0.813rem;
-          font-weight: 500;
-          transition: color var(--transition);
-          border: none;
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          white-space: nowrap;
-        }
-
-        .nav-link:hover,
-        .nav-link.active {
-          color: var(--text);
-        }
-
-        .lang-btn {
-          padding: 0.4rem 0.75rem;
-          background: var(--text);
-          color: var(--bg);
-          border: 1px solid var(--text);
-          font-weight: 500;
-          font-size: 0.813rem;
-          cursor: pointer;
-          transition: all var(--transition);
-          text-transform: uppercase;
-          letter-spacing: 0.05em;
-          display: inline-block;
-          white-space: nowrap;
-          border-radius: 4px;
-        }
-
-        .lang-btn:hover {
-          background: var(--bg);
-          color: var(--text);
-        }
-
-        .nav-toggle {
-          display: none;
-          background: none;
-          border: none;
-          cursor: pointer;
-          padding: 12px;
-          margin: -12px;
-          position: relative;
-          z-index: 1001;
-        }
-
-        .hamburger {
-          display: block;
-          width: 24px;
-          height: 2px;
-          background: var(--text);
-          position: relative;
-          transition: background 0.2s ease-out;
-        }
-
-        .hamburger::before,
-        .hamburger::after {
-          content: '';
-          display: block;
-          width: 100%;
-          height: 2px;
-          background: var(--text);
-          position: absolute;
-          transition: transform 0.2s ease-out;
-        }
-
-        .hamburger::before {
-          top: -8px;
-        }
-
-        .hamburger::after {
-          bottom: -8px;
-        }
-
-        @media (max-width: 968px) {
-          .nav-container {
-            padding: 1rem;
-          }
-
-          .search-form {
-            display: none;
-          }
-
-          .mobile-search-form {
-            display: block;
-            width: 100%;
-            margin-bottom: 1rem;
-          }
-
-          .nav-logo {
-            font-size: 1.25rem;
-          }
-
-          .nav-toggle {
-            display: block;
-          }
-
-          .nav-links {
-            display: none;
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--bg);
-            border-bottom: 1px solid var(--border);
-            flex-direction: column;
-            align-items: stretch;
-            padding: 1.5rem 1rem;
-            gap: 0;
-            z-index: 1000;
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-            max-height: calc(100vh - 60px);
-            overflow-y: auto;
-          }
-
-          .nav-links.active {
-            display: flex;
-          }
-
-          .nav-link {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            font-size: 0.95rem;
-          }
-
-          .nav-link:last-of-type {
-            border-bottom: 1px solid var(--border);
-          }
-
-          .language-switcher {
-            margin-top: 1rem;
-            padding-top: 1rem;
-            border-top: 2px solid var(--border);
-            text-align: center;
-          }
-
-          .lang-btn {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem;
-            text-align: center;
-          }
-        }
-      `}</style>
     </nav>
   )
 }
