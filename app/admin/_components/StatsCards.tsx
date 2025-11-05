@@ -12,6 +12,8 @@ interface StatsCardsProps {
 }
 
 export default function StatsCards({ stats }: StatsCardsProps) {
+  const isLoading = stats === null
+  
   const cards = [
     {
       title: "Total Comparisons",
@@ -57,8 +59,17 @@ export default function StatsCards({ stats }: StatsCardsProps) {
                 <Icon className="w-6 h-6 text-white" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-[var(--text)] mb-1">{card.value}</p>
-            <p className="text-sm text-[var(--text-secondary)] font-medium">{card.title}</p>
+            {isLoading ? (
+              <>
+                <div className="h-9 w-20 bg-[var(--border)] rounded animate-pulse mb-1" />
+                <div className="h-4 w-32 bg-[var(--border)] rounded animate-pulse" />
+              </>
+            ) : (
+              <>
+                <p className="text-3xl font-bold text-[var(--text)] mb-1">{card.value}</p>
+                <p className="text-sm text-[var(--text-secondary)] font-medium">{card.title}</p>
+              </>
+            )}
           </div>
         )
       })}

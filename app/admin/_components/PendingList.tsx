@@ -52,9 +52,12 @@ export default function PendingList({ onRefresh }: PendingListProps) {
       const data = await response.json()
       if (data.success) {
         setComparisons(data.comparisons || [])
+      } else {
+        toast.error("Failed to load comparisons")
       }
     } catch (error) {
       console.error("Failed to load comparisons:", error)
+      toast.error("An error occurred while loading comparisons")
     } finally {
       setLoading(false)
     }
@@ -128,9 +131,13 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                   {confirmDialog?.action === "approve" ? "Approve Comparison?" : "Reject Comparison?"}
                 </DialogTitle>
                 <DialogDescription className="text-sm text-[var(--text-secondary)]">
-                  Are you sure you want to {confirmDialog?.action} the comparison between{" "}
-                  <span className="font-semibold text-[var(--text)]">{confirmDialog?.product1}</span> and{" "}
-                  <span className="font-semibold text-[var(--text)]">{confirmDialog?.product2}</span>?
+                  {confirmDialog?.action === "approve" 
+                    ? "This will publish the comparison and make it visible to all users."
+                    : "This will remove the comparison from the pending list and notify the submitter."}
+                  <br />
+                  <span className="font-semibold text-[var(--text)] mt-2 inline-block">
+                    {confirmDialog?.product1} vs {confirmDialog?.product2}
+                  </span>
                 </DialogDescription>
               </div>
             </div>
@@ -217,18 +224,26 @@ export default function PendingList({ onRefresh }: PendingListProps) {
                   <Button
                     onClick={() => showConfirmDialog(comp.id, "approve", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="bg-green-500 hover:bg-green-600"
+                    className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    {actionLoading === comp.id ? (
+                      <div className="w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                    )}
                     <span className="hidden sm:inline">Approve</span>
                   </Button>
                   <Button
                     variant="outline"
                     onClick={() => showConfirmDialog(comp.id, "reject", comp.product1_name, comp.product2_name)}
                     disabled={actionLoading === comp.id}
-                    className="border-2 border-[var(--border)] hover:bg-red-500 hover:text-white hover:border-red-500"
+                    className="border-2 border-[var(--border)] hover:bg-red-500 hover:text-white hover:border-red-500 disabled:opacity-50"
                   >
-                    <XCircle className="w-4 h-4 mr-2" />
+                    {actionLoading === comp.id ? (
+                      <div className="w-4 h-4 mr-2 border-2 border-[var(--text)] border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <XCircle className="w-4 h-4 mr-2" />
+                    )}
                     <span className="hidden sm:inline">Reject</span>
                   </Button>
                 </div>
