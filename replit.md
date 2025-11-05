@@ -10,6 +10,12 @@ Products VS is a bilingual (English/Arabic) product comparison platform built wi
 
 Preferred communication style: Simple, everyday language.
 
+**Admin Panel Design:**
+- Black/white/gray minimalist design (no gradients or bright colors)
+- Top navbar navigation (no sidebar)
+- Clean borders and simple typography
+- Responsive layout with clear spacing
+
 ## System Architecture
 
 ### Frontend Architecture
