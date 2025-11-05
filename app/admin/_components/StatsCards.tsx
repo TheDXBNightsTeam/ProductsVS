@@ -17,21 +17,29 @@ export default function StatsCards({ stats }: StatsCardsProps) {
       title: "Total Comparisons",
       value: stats?.total_comparisons || 0,
       icon: FileText,
+      color: "bg-blue-500",
+      bgColor: "bg-blue-50 dark:bg-blue-900/20",
     },
     {
       title: "Pending Review",
       value: stats?.pending || 0,
       icon: Clock,
+      color: "bg-amber-500",
+      bgColor: "bg-amber-50 dark:bg-amber-900/20",
     },
     {
       title: "Published",
       value: stats?.published || 0,
       icon: CheckCircle,
+      color: "bg-green-500",
+      bgColor: "bg-green-50 dark:bg-green-900/20",
     },
     {
       title: "Rejected",
       value: stats?.rejected || 0,
       icon: XCircle,
+      color: "bg-red-500",
+      bgColor: "bg-red-50 dark:bg-red-900/20",
     },
   ]
 
@@ -42,15 +50,15 @@ export default function StatsCards({ stats }: StatsCardsProps) {
         return (
           <div
             key={card.title}
-            className="bg-white border border-gray-200 rounded-lg p-6 hover:border-black transition-colors"
+            className="bg-[var(--surface)] border-2 border-[var(--border)] rounded-lg p-6 hover:border-[var(--text)] transition-all hover:shadow-lg"
           >
             <div className="flex items-start justify-between mb-4">
-              <div className="w-10 h-10 bg-black rounded-lg flex items-center justify-center">
-                <Icon className="w-5 h-5 text-white" />
+              <div className={`w-12 h-12 ${card.color} rounded-lg flex items-center justify-center shadow-md`}>
+                <Icon className="w-6 h-6 text-white" />
               </div>
             </div>
-            <p className="text-3xl font-bold text-black mb-1">{card.value}</p>
-            <p className="text-sm text-gray-500">{card.title}</p>
+            <p className="text-3xl font-bold text-[var(--text)] mb-1">{card.value}</p>
+            <p className="text-sm text-[var(--text-secondary)] font-medium">{card.title}</p>
           </div>
         )
       })}

@@ -54,22 +54,22 @@ export default function AdminLoginClient() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[var(--bg)] p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-lg border-2 border-black p-8">
+        <div className="bg-[var(--surface)] rounded-lg border-2 border-[var(--border)] p-8 shadow-lg">
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-black rounded-lg mb-4">
-              <Shield className="w-8 h-8 text-white" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-[var(--text)] rounded-lg mb-4">
+              <Shield className="w-8 h-8 text-[var(--bg)]" />
             </div>
-            <h1 className="text-3xl font-bold text-black mb-1">
+            <h1 className="text-3xl font-bold text-[var(--text)] mb-1">
               Products<span className="font-light">VS</span>
             </h1>
-            <p className="text-sm text-gray-500 uppercase tracking-wide">ADMIN DASHBOARD</p>
+            <p className="text-sm text-[var(--text-secondary)] uppercase tracking-wide">ADMIN DASHBOARD</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-semibold text-black mb-2">
+              <label htmlFor="email" className="block text-sm font-semibold text-[var(--text)] mb-2">
                 Email Address
               </label>
               <input
@@ -80,13 +80,13 @@ export default function AdminLoginClient() {
                 required
                 value={formData.email}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                className="w-full px-4 py-3 border-2 border-[var(--border)] bg-[var(--bg)] text-[var(--text)] rounded-lg focus:border-[var(--text)] focus:outline-none transition-colors"
                 placeholder="admin@productsvs.com"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-semibold text-black mb-2">
+              <label htmlFor="password" className="block text-sm font-semibold text-[var(--text)] mb-2">
                 Password
               </label>
               <input
@@ -97,7 +97,7 @@ export default function AdminLoginClient() {
                 required
                 value={formData.password}
                 onChange={handleChange}
-                className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:border-black focus:outline-none transition-colors"
+                className="w-full px-4 py-3 border-2 border-[var(--border)] bg-[var(--bg)] text-[var(--text)] rounded-lg focus:border-[var(--text)] focus:outline-none transition-colors"
                 placeholder="Enter your password"
               />
             </div>
@@ -109,23 +109,23 @@ export default function AdminLoginClient() {
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={handleChange}
-                className="h-4 w-4 border-2 border-gray-300 rounded focus:ring-0 focus:ring-offset-0"
+                className="h-4 w-4 border-2 border-[var(--border)] rounded focus:ring-0 focus:ring-offset-0"
               />
-              <label htmlFor="rememberMe" className="ml-2 text-sm text-gray-600">
+              <label htmlFor="rememberMe" className="ml-2 text-sm text-[var(--text-secondary)]">
                 Remember me for 7 days
               </label>
             </div>
 
             {error && (
-              <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-                <p className="text-sm text-red-800 font-medium">{error}</p>
+              <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-lg p-4">
+                <p className="text-sm text-red-800 dark:text-red-300 font-medium">{error}</p>
               </div>
             )}
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-[var(--text)] text-[var(--bg)] py-3 px-4 rounded-lg font-semibold hover:opacity-90 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <>
@@ -138,7 +138,7 @@ export default function AdminLoginClient() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-xs text-gray-500">
+          <p className="mt-6 text-center text-xs text-[var(--text-secondary)]">
             Protected admin access only
           </p>
         </div>

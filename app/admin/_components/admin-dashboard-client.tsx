@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { Loader2 } from "lucide-react"
+import { Toaster } from "sonner"
 import Navbar from "./Navbar"
 import StatsCards from "./StatsCards"
 import PendingList from "./PendingList"
@@ -75,23 +76,24 @@ export default function AdminDashboardClient() {
 
   if (loading || !isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg)]">
         <div className="text-center">
-          <Loader2 className="w-12 h-12 text-black animate-spin mx-auto mb-4" />
-          <p className="text-gray-600">Loading dashboard...</p>
+          <Loader2 className="w-12 h-12 text-[var(--text)] animate-spin mx-auto mb-4" />
+          <p className="text-[var(--text-secondary)]">Loading dashboard...</p>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[var(--bg)]">
+      <Toaster position="top-right" richColors />
       <Navbar admin={admin} onLogout={handleLogout} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black mb-2">Dashboard</h1>
-          <p className="text-gray-600">Welcome back, {admin?.name}</p>
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">Dashboard</h1>
+          <p className="text-[var(--text-secondary)]">Welcome back, {admin?.name}</p>
         </div>
 
         <div className="space-y-6">
