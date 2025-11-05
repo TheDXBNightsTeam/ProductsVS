@@ -97,16 +97,16 @@
 /* Enhanced dark mode with proper color contrast */
 .dark {
   /* Custom Variables for Dark Mode */
-  --bg: #0a0a0a;
-  --surface: #1a1a1a;
+  --bg: #0f0f0f;
+  --surface: #1c1c1c;
   --surface-alt: #2a2a2a;
   --text: #ffffff;
-  --text-secondary: #b5b5b5;
-  --text-light: #8a8a8a;
-  --border: #2a2a2a;
-  --border-dark: #3a3a3a;
-  --bg-primary: #0a0a0a;
-  --bg-secondary: #1a1a1a;
+  --text-secondary: #d1d1d1;
+  --text-light: #a0a0a0;
+  --border: #404040;
+  --border-dark: #505050;
+  --bg-primary: #0f0f0f;
+  --bg-secondary: #1c1c1c;
   --primary-color: #ffffff;
 
   /* Shadcn Variables */
