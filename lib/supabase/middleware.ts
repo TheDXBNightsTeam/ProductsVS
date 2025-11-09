@@ -41,8 +41,12 @@ export async function updateSession(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
   if (!supabaseUrl || !supabaseAnonKey) {
-    console.error('Missing Supabase environment variables in middleware')
-    return supabaseResponse
+    if (process.env.NODE_ENV === "production") {
+      throw new Error("Missing Supabase environment variables in production middleware")
+    } else {
+      console.error('Missing Supabase environment variables in middleware')
+      return supabaseResponse
+    }
   }
 
   const supabase = createServerClient(
