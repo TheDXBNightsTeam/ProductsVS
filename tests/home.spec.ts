@@ -46,11 +46,12 @@ test.describe('Home Page', () => {
   test('should display AI Battle section', async ({ page }) => {
     await page.goto('/');
     
-    // Check for AI Battle heading
-    await expect(page.locator('text=AI Battle')).toBeVisible();
+    // Check for AI Battle heading using role and more specific text
+    await expect(page.locator('h2').filter({ hasText: 'AI Battle' })).toBeVisible();
     
-    // Check for comparison form
-    await expect(page.locator('form')).toBeVisible();
+    // Check for comparison form using aria-label
+    const comparisonForm = page.locator('form[aria-label*="comparison"]').first();
+    await expect(comparisonForm).toBeVisible();
     
     // Check for product input fields
     await expect(page.locator('input#productA')).toBeVisible();

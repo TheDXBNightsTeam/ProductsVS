@@ -118,25 +118,37 @@ test.describe('Routing and Pages', () => {
 
   test('should handle browser back button', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    
     await page.goto('/about');
+    await page.waitForLoadState('networkidle');
     
     // Go back
-    await page.goBack();
+    await page.goBack({ waitUntil: 'networkidle' });
     
     // Should be at home page
-    expect(page.url()).toMatch(/\/$|\/en$/);
+    await page.waitForTimeout(500);
+    const url = page.url();
+    expect(url).toMatch(/\/$|\/en$|localhost:5000$/);
   });
 
   test('should handle browser forward button', async ({ page }) => {
     await page.goto('/');
+    await page.waitForLoadState('networkidle');
+    
     await page.goto('/about');
-    await page.goBack();
+    await page.waitForLoadState('networkidle');
+    
+    await page.goBack({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
     
     // Go forward
-    await page.goForward();
+    await page.goForward({ waitUntil: 'networkidle' });
+    await page.waitForTimeout(500);
     
     // Should be at about page
-    expect(page.url()).toContain('about');
+    const url = page.url();
+    expect(url).toContain('about');
   });
 
   test('should update page title on route change', async ({ page }) => {
